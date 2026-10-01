@@ -34,6 +34,10 @@ async function initSlideshow() {
     frame.hidden = true;
     return;
   }
+  // Hide the slideshow if the photo files are not actually reachable yet.
+  const probe = new Image();
+  probe.onerror = () => { frame.hidden = true; };
+  probe.src = photos[0].src;
   slidesEl.innerHTML = photos
     .map(
       (p, i) =>
