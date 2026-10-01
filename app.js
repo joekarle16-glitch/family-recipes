@@ -13,12 +13,12 @@ async function init() {
   if (gallery) {
     initGallery(gallery);
   }
-  initSlideshow();
+  initCollage();
 }
 
-async function initSlideshow() {
-  const slidesEl = document.getElementById("slides");
-  if (!slidesEl) return;
+async function initCollage() {
+  const bg = document.getElementById("collage-bg");
+  if (!bg) return;
   let photos = [];
   try {
     const res = await fetch("family-photos.json", { cache: "no-store" });
@@ -27,67 +27,39 @@ async function initSlideshow() {
       photos = Array.isArray(data.photos) ? data.photos : [];
     }
   } catch (err) {
-    /* no slideshow until photos arrive */
+    /* plain hero background until photos arrive */
   }
-  const frame = slidesEl.closest(".slideshow");
   if (!photos.length) {
-    frame.hidden = true;
+    bg.style.display = "none";
     return;
   }
-  // Hide the slideshow if the photo files are not actually reachable yet.
+  // Hide the collage if the photo files are not actually reachable yet.
   const probe = new Image();
-  probe.onerror = () => { frame.hidden = true; };
+  probe.onerror = () => { bg.style.display = "none"; };
   probe.src = photos[0].src;
-  slidesEl.innerHTML = photos
+  bg.innerHTML = photos
     .map(
       (p, i) =>
-        `<figure class="slide${i === 0 ? " active" : ""}" role="group" aria-roledescription="slide" aria-label="${i + 1} of ${photos.length}">` +
-        `<img src="${esc(p.src)}" alt="${esc(p.caption || "Family photo")}"${i > 0 ? ' loading="lazy"' : ""}>` +
-        (p.caption ? `<figcaption>${esc(p.caption)}</figcaption>` : "") +
-        `</figure>`
+        `<div class="ph${i === 0 ? " active" : ""}" role="img" aria-label="Family photo ${i + 1} of ${photos.length}"` +
+        ` style="background-image:url('${esc(p.src)}')"></div>`
     )
     .join("");
-  const dotsEl = document.getElementById("slide-dots");
-  dotsEl.innerHTML = photos
-    .map(
-      (_, i) =>
-        `<button role="tab" aria-selected="${i === 0 ? "true" : "false"}" aria-label="Photo ${i + 1}"></button>`
-    )
-    .join("");
-  const slides = Array.from(slidesEl.children);
-  const dots = Array.from(dotsEl.children);
-  const prevBtn = document.getElementById("slide-prev");
-  const nextBtn = document.getElementById("slide-next");
-  const reducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+  const frames = Array.from(bg.children);
+  if (frames.length < 2) return;
+  if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
   let current = 0;
-  let timer = null;
-
-  function go(n) {
-    slides[current].classList.remove("active");
-    dots[current].setAttribute("aria-selected", "false");
-    current = (n + photos.length) % photos.length;
-    slides[current].classList.add("active");
-    dots[current].setAttribute("aria-selected", "true");
+  let timer = setInterval(next, 6000);
+  function next() {
+    frames[current].classList.remove("active");
+    current = (current + 1) % frames.length;
+    frames[current].classList.add("active");
   }
-  function stop() {
-    if (timer) {
-      clearInterval(timer);
-      timer = null;
-    }
-  }
-  function play() {
-    if (reducedMotion) return;
-    stop();
-    timer = setInterval(() => go(current + 1), 6000);
-  }
-  prevBtn.addEventListener("click", () => { go(current - 1); play(); });
-  nextBtn.addEventListener("click", () => { go(current + 1); play(); });
-  dots.forEach((d, i) => d.addEventListener("click", () => { go(i); play(); }));
-  frame.addEventListener("mouseenter", stop);
-  frame.addEventListener("mouseleave", play);
-  frame.addEventListener("focusin", stop);
-  frame.addEventListener("focusout", play);
-  play();
+  const hero = bg.closest(".hero-collage");
+  hero.addEventListener("mouseenter", () => clearInterval(timer));
+  hero.addEventListener("mouseleave", () => {
+    clearInterval(timer);
+    timer = setInterval(next, 6000);
+  });
 }
 
 async function initGallery(gallery) {
@@ -101,9 +73,7 @@ async function initGallery(gallery) {
     gallery.innerHTML = photos
       .map(
         (p) =>
-          `<figure><img src="${esc(p.src)}" alt="${esc(p.caption || "Family photo")}" loading="lazy">` +
-          (p.caption ? `<figcaption>${esc(p.caption)}</figcaption>` : "") +
-          `</figure>`
+          `<figure><img src="${esc(p.src)}" alt="Family photo" loading="lazy"></figure>`
       )
       .join("");
   } catch (err) {

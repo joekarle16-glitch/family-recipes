@@ -4,7 +4,10 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>The Karle Family Kitchen</title>
-  <meta name="description" content="The Karle family recipe collection. Recipes worth keeping, preserved for the whole family.">
+  <meta name="description" content="The Karle family recipe collection. The dishes we grew up on, written down exactly as they were taught.">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,500;9..144,600&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="styles.css">
 </head>
 <body>
@@ -19,32 +22,29 @@
     </div>
   </header>
 
-  <main class="wrap">
-    <section class="hero">
-      <div class="hero-frame">
-        <p class="eyebrow">The Karle Family Collection</p>
-        <h1>Recipes worth <em>keeping</em>.</h1>
-        <div class="rule" aria-hidden="true"><span></span></div>
-        <p class="lede">Every family has dishes that taste like home. This is where ours live, written down the way they were taught, so nobody ever has to guess.</p>
-        <p class="cta-row"><a class="btn" href="https://docs.google.com/forms/d/e/1FAIpQLSeMjujj2V8r2qpa9AzD3FdnhOJYmLnaT23Jv3LP4Be8rbk6rA/viewform" target="_blank" rel="noopener">Add a family recipe</a></p>
-        <div class="stats" aria-label="Collection stats">
-          <div><strong id="stat-recipes">&ndash;</strong><span>Recipes</span></div>
-          <div><strong id="stat-cooks">&ndash;</strong><span>Family cooks</span></div>
-        </div>
+  <section class="hero-collage" aria-label="Family photos">
+    <div class="collage-bg" id="collage-bg" aria-hidden="true"></div>
+    <div class="hero-shade" aria-hidden="true"></div>
+    <div class="wrap hero-content">
+      <p class="eyebrow light">The Karle family collection</p>
+      <h1>Recipes worth keeping.</h1>
+      <p class="lede">The dishes we grew up on, written down exactly as they were taught. No guessing, no lost index cards.</p>
+      <p class="cta-row">
+        <a class="btn" href="https://docs.google.com/forms/d/e/1FAIpQLSeMjujj2V8r2qpa9AzD3FdnhOJYmLnaT23Jv3LP4Be8rbk6rA/viewform" target="_blank" rel="noopener">Add a family recipe</a>
+        <a class="btn ghost" href="#grid">Browse the recipes</a>
+      </p>
+      <div class="stats" aria-label="Collection stats">
+        <div><strong id="stat-recipes">&ndash;</strong><span>Recipes</span></div>
+        <div><strong id="stat-cooks">&ndash;</strong><span>Family cooks</span></div>
       </div>
-    </section>
+    </div>
+  </section>
 
+  <main class="wrap">
     <section class="how" aria-label="How it works">
-      <div class="how-step"><span class="how-num">1</span><h3>Photograph the cards</h3><p>Snap the recipe box cards, front and back.</p></div>
-      <div class="how-step"><span class="how-num">2</span><h3>We transcribe</h3><p>Every card is written out word for word, never guessed.</p></div>
-      <div class="how-step"><span class="how-num">3</span><h3>The family cooks</h3><p>New recipes appear here for everyone to use.</p></div>
-    </section>
-
-    <section class="slideshow" aria-label="Family photos" aria-roledescription="carousel">
-      <div class="slides" id="slides"></div>
-      <button class="slide-nav prev" id="slide-prev" aria-label="Previous photo">&#8249;</button>
-      <button class="slide-nav next" id="slide-next" aria-label="Next photo">&#8250;</button>
-      <div class="slide-dots" id="slide-dots" role="tablist" aria-label="Choose photo"></div>
+      <div class="how-step"><span class="how-num">1</span><h3>Snap the cards</h3><p>Photograph each recipe card, front and back.</p></div>
+      <div class="how-step"><span class="how-num">2</span><h3>We write it out</h3><p>Every card transcribed word for word. Nothing guessed.</p></div>
+      <div class="how-step"><span class="how-num">3</span><h3>The family cooks</h3><p>New recipes land here for everyone to use.</p></div>
     </section>
 
     <section class="controls">
@@ -53,12 +53,12 @@
     </section>
 
     <section id="grid" class="grid" aria-live="polite"></section>
-    <p id="empty" class="empty" hidden>No recipes match your search yet. Try a different word.</p>
+    <p id="empty" class="empty" hidden>No recipes match your search. Try a different word.</p>
   </main>
 
   <footer class="site-footer">
-    <p class="colophon">Made with care by the Karle family.</p>
-    <p>Curated by Joe and Jim. More recipes on the way.</p>
+    <p class="colophon">The Karle Family Kitchen</p>
+    <p>Put together by Joe and Jim for the whole family. More recipes on the way.</p>
     <p><a href="https://docs.google.com/forms/d/e/1FAIpQLSdMkBRr1ul1rF6vRf6hXzCZIHddtsfy7_9gn89YjlPJ9ZGVbg/viewform" target="_blank" rel="noopener">Share feedback or a correction</a></p>
   </footer>
 
