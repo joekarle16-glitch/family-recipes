@@ -9,6 +9,31 @@ async function init() {
   if (detail) {
     renderDetail(recipes, detail);
   }
+  const gallery = document.getElementById("family-gallery");
+  if (gallery) {
+    initGallery(gallery);
+  }
+}
+
+async function initGallery(gallery) {
+  try {
+    const res = await fetch("family-photos.json", { cache: "no-store" });
+    if (!res.ok) return;
+    const data = await res.json();
+    const photos = Array.isArray(data.photos) ? data.photos : [];
+    const emptyNote = document.getElementById("gallery-empty");
+    if (emptyNote) emptyNote.hidden = photos.length > 0;
+    gallery.innerHTML = photos
+      .map(
+        (p) =>
+          `<figure><img src="${esc(p.src)}" alt="${esc(p.caption || "Family photo")}" loading="lazy">` +
+          (p.caption ? `<figcaption>${esc(p.caption)}</figcaption>` : "") +
+          `</figure>`
+      )
+      .join("");
+  } catch (err) {
+    /* gallery stays empty until photos arrive */
+  }
 }
 
 async function loadRecipes() {
@@ -46,6 +71,15 @@ function initHome(recipes) {
   const empty = document.getElementById("empty");
   const search = document.getElementById("search");
   const chipsWrap = document.getElementById("categories");
+
+  const statRecipes = document.getElementById("stat-recipes");
+  if (statRecipes) statRecipes.textContent = recipes.length;
+  const statCooks = document.getElementById("stat-cooks");
+  if (statCooks) {
+    statCooks.textContent = new Set(
+      recipes.map((r) => r.attribution).filter(Boolean)
+    ).size;
+  }
 
   const categories = ["All"];
   recipes.forEach((r) => {
@@ -158,6 +192,7 @@ function renderDetail(recipes, root) {
     (recipe.attribution ? `<p class="byline">From ${esc(recipe.attribution)}</p>` : "") +
     (recipe.description ? `<p class="desc lede">${esc(recipe.description)}</p>` : "") +
     `</div>` +
+    `<div class="read-aloud"><button type="button" class="btn" id="listen-btn" aria-pressed="false">Listen to this recipe</button></div>` +
     `<img class="recipe-photo" src="${esc(photoFor(recipe))}" alt="${esc(recipe.title)}">` +
     `<div class="meta-row">` +
     (recipe.servings ? `<div><span>Servings</span><strong>${esc(recipe.servings)}</strong></div>` : "") +
@@ -182,4 +217,51 @@ function renderDetail(recipes, root) {
       photo.src = "images/placeholder.svg";
     }
   });
+
+  wireReadAloud(recipe);
+}
+
+function wireReadAloud(recipe) {
+  const btn = document.getElementById("listen-btn");
+  if (!btn) return;
+  if (!("speechSynthesis" in window)) {
+    btn.remove();
+    return;
+  }
+  const text = [
+    recipe.title + ".",
+    recipe.attribution ? "From " + recipe.attribution + "." : "",
+    recipe.description || "",
+    "Ingredients. " + (recipe.ingredients || []).join(". "),
+    "Steps. " +
+      (recipe.steps || [])
+        .map((s, i) => "Step " + (i + 1) + ". " + s)
+        .join(" "),
+  ]
+    .filter(Boolean)
+    .join(" ");
+
+  let speaking = false;
+  function stop() {
+    window.speechSynthesis.cancel();
+    speaking = false;
+    btn.textContent = "Listen to this recipe";
+    btn.setAttribute("aria-pressed", "false");
+  }
+  btn.addEventListener("click", () => {
+    if (speaking) {
+      stop();
+      return;
+    }
+    window.speechSynthesis.cancel();
+    const utterance = new SpeechSynthesisUtterance(text);
+    utterance.rate = 0.95;
+    utterance.onend = stop;
+    utterance.onerror = stop;
+    window.speechSynthesis.speak(utterance);
+    speaking = true;
+    btn.textContent = "Stop reading";
+    btn.setAttribute("aria-pressed", "true");
+  });
+  window.addEventListener("beforeunload", () => window.speechSynthesis.cancel());
 }
