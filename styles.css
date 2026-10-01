@@ -751,6 +751,98 @@ ol.steps li:last-child::after { display: none; }
 .site-footer a { color: var(--cream); text-decoration: underline; text-underline-offset: 3px; }
 .site-footer a:hover { color: #ffffff; }
 
+/* ---------- Cook mode: checkable ingredients & steps ---------- */
+
+#recipe-body { scroll-margin-top: 96px; }
+
+.jump-row { margin: 1.3rem 0 0; }
+
+ul.ingredients li { cursor: pointer; }
+
+ul.ingredients li::before {
+  content: "";
+  position: absolute;
+  left: 0.1rem;
+  top: 0.78rem;
+  width: 13px;
+  height: 13px;
+  border: 1.5px solid var(--brass-deep);
+  border-radius: 4px;
+  background: transparent;
+  transform: none;
+}
+
+ul.ingredients li.done::before { background: var(--pine); border-color: var(--pine); }
+
+ul.ingredients li.done::after {
+  content: "\2713";
+  position: absolute;
+  left: 0.32rem;
+  top: 0.52rem;
+  font-size: 0.8rem;
+  font-weight: 700;
+  color: #fff;
+}
+
+ul.ingredients li.done span {
+  text-decoration: line-through;
+  color: var(--muted);
+}
+
+ol.steps li { cursor: pointer; border-radius: 8px; }
+
+ol.steps li.done::before {
+  content: "\2713";
+  color: var(--brass-deep);
+  font-size: 1.6rem;
+  top: 0;
+}
+
+ol.steps li.done .step-text {
+  color: var(--muted);
+  text-decoration: line-through;
+}
+
+.cook-hint {
+  font-size: 0.85rem;
+  color: var(--muted);
+  font-style: italic;
+  font-family: var(--serif);
+  margin: 0 0 1rem;
+}
+
+/* ---------- Print: recipes print cleanly ---------- */
+
+@media print {
+  .site-header,
+  .hero-collage,
+  .controls,
+  .back,
+  .read-aloud,
+  .jump-row,
+  .site-footer,
+  .example-ribbon,
+  .cook-hint { display: none !important; }
+
+  body { background: #fff; font-size: 11pt; }
+
+  .wrap { max-width: none; }
+
+  a { color: inherit; text-decoration: none; }
+
+  .recipe-photo { max-height: 240px; box-shadow: none; }
+
+  .two-col { grid-template-columns: 1fr; gap: 1.2rem; }
+
+  .card, .how-step, ul.ingredients, .note-box, .meta-row { box-shadow: none; }
+
+  ol.steps li::after { display: none; }
+
+  ul.ingredients li, ol.steps li { cursor: default; }
+
+  .recipe-head .desc.lede::first-letter { font-size: 2em; float: none; line-height: 1.2; padding: 0; }
+}
+
 /* ---------- Mobile ---------- */
 
 @media (max-width: 640px) {

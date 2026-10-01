@@ -236,6 +236,7 @@ function renderDetail(recipes, root) {
     `<h1>${esc(recipe.title)}</h1>` +
     (recipe.attribution ? `<p class="byline">From ${esc(recipe.attribution)}</p>` : "") +
     (recipe.description ? `<p class="desc lede">${esc(recipe.description)}</p>` : "") +
+    `<p class="jump-row"><a class="btn" href="#recipe-body">Jump to recipe</a></p>` +
     `</div>` +
     `<div class="read-aloud"><button type="button" class="btn" id="listen-btn" aria-pressed="false">Listen to this recipe</button></div>` +
     `<img class="recipe-photo" src="${esc(photoFor(recipe))}" alt="${esc(recipe.title)}">` +
@@ -245,15 +246,21 @@ function renderDetail(recipes, root) {
     (recipe.cookTime ? `<div><span>Cook</span><strong>${esc(recipe.cookTime)}</strong></div>` : "") +
     `</div>` +
     (notes ? `<div class="note-box"><h3>A note on the original card</h3>${notes}</div>` : "") +
-    `<div class="two-col">` +
-    `<div><h2>Ingredients</h2><ul class="ingredients">${(recipe.ingredients || [])
-      .map((i) => `<li>${esc(i)}</li>`)
+    `<div class="two-col" id="recipe-body">` +
+    `<div><h2>Ingredients</h2><p class="cook-hint">Tap an ingredient to check it off as you go.</p><ul class="ingredients">${(recipe.ingredients || [])
+      .map((i) => `<li><span>${esc(i)}</span></li>`)
       .join("")}</ul></div>` +
-    `<div><h2>Steps</h2><ol class="steps">${(recipe.steps || [])
-      .map((s) => `<li>${esc(s)}</li>`)
+    `<div><h2>Steps</h2><p class="cook-hint">Tap a step to mark it done.</p><ol class="steps">${(recipe.steps || [])
+      .map((s) => `<li><span class="step-text">${esc(s)}</span></li>`)
       .join("")}</ol></div>` +
     `</div>` +
     (recipe.sourceNote ? `<p class="source-note">${esc(recipe.sourceNote)}</p>` : "");
+
+  injectRecipeSchema(recipe);
+
+  root.querySelectorAll("ul.ingredients li, ol.steps li").forEach((li) => {
+    li.addEventListener("click", () => li.classList.toggle("done"));
+  });
 
   const photo = root.querySelector(".recipe-photo");
   photo.addEventListener("error", () => {
@@ -264,6 +271,27 @@ function renderDetail(recipes, root) {
   });
 
   wireReadAloud(recipe);
+}
+
+function injectRecipeSchema(recipe) {
+  const schema = {
+    "@context": "https://schema.org",
+    "@type": "Recipe",
+    name: recipe.title,
+    description: recipe.description || undefined,
+    author: recipe.attribution
+      ? { "@type": "Person", name: recipe.attribution }
+      : undefined,
+    recipeIngredient: recipe.ingredients || [],
+    recipeInstructions: (recipe.steps || []).map((s) => ({
+      "@type": "HowToStep",
+      text: s,
+    })),
+  };
+  const script = document.createElement("script");
+  script.type = "application/ld+json";
+  script.textContent = JSON.stringify(schema);
+  document.head.appendChild(script);
 }
 
 function wireReadAloud(recipe) {

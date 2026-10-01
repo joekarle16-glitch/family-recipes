@@ -5,10 +5,16 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>The Karle Family Kitchen</title>
   <meta name="description" content="The Karle family recipe collection. The dishes we grew up on, written down exactly as they were taught.">
+  <meta property="og:title" content="The Karle Family Kitchen">
+  <meta property="og:description" content="The dishes we grew up on, written down exactly as they were taught. Every card from the box, kept word for word.">
+  <meta property="og:type" content="website">
+  <meta property="og:url" content="https://karlekitchen.com/">
+  <meta property="og:image" content="https://karlekitchen.com/images/family/family-2.jpg">
+  <link rel="icon" href="images/favicon.svg" type="image/svg+xml">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,500;9..144,600&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="styles.css?v=2">
+  <link rel="stylesheet" href="styles.css?v=3">
 </head>
 <body>
   <header class="site-header">
@@ -28,7 +34,7 @@
     <div class="wrap hero-content">
       <p class="eyebrow light">The Karle family collection</p>
       <h1>Recipes worth keeping.</h1>
-      <p class="lede">The dishes we grew up on, written down exactly as they were taught. No guessing, no lost index cards.</p>
+      <p class="lede">The dishes we grew up on, written down exactly as they were taught. Every card from the box, kept word for word.</p>
       <p class="cta-row">
         <a class="btn" href="https://docs.google.com/forms/d/e/1FAIpQLSeMjujj2V8r2qpa9AzD3FdnhOJYmLnaT23Jv3LP4Be8rbk6rA/viewform" target="_blank" rel="noopener">Add a family recipe</a>
         <a class="btn ghost" href="#grid">Browse the recipes</a>
@@ -42,18 +48,18 @@
 
   <main class="wrap">
     <section class="how" aria-label="How it works">
-      <div class="how-step"><span class="how-num">1</span><h3>Snap the cards</h3><p>Photograph each recipe card, front and back.</p></div>
-      <div class="how-step"><span class="how-num">2</span><h3>We write it out</h3><p>Every card transcribed word for word. Nothing guessed.</p></div>
-      <div class="how-step"><span class="how-num">3</span><h3>The family cooks</h3><p>New recipes land here for everyone to use.</p></div>
+      <div class="how-step"><span class="how-num">1</span><h3>Photograph the cards</h3><p>Snap each card, front and back, and send it our way.</p></div>
+      <div class="how-step"><span class="how-num">2</span><h3>We write them out</h3><p>Every card transcribed word for word, exactly as written.</p></div>
+      <div class="how-step"><span class="how-num">3</span><h3>Everyone cooks</h3><p>New recipes land here for the whole family to use.</p></div>
     </section>
 
     <section class="controls">
-      <input id="search" type="search" placeholder="Search recipes or ingredients" aria-label="Search recipes">
+      <input id="search" type="search" placeholder="Search recipes, cooks, or ingredients" aria-label="Search recipes">
       <div id="categories" class="chips" aria-label="Filter by category"></div>
     </section>
 
     <section id="grid" class="grid" aria-live="polite"></section>
-    <p id="empty" class="empty" hidden>No recipes match your search. Try a different word.</p>
+    <p id="empty" class="empty" hidden>Nothing by that name yet. Try a different word.</p>
   </main>
 
   <footer class="site-footer">
@@ -62,6 +68,6 @@
     <p><a href="https://docs.google.com/forms/d/e/1FAIpQLSdMkBRr1ul1rF6vRf6hXzCZIHddtsfy7_9gn89YjlPJ9ZGVbg/viewform" target="_blank" rel="noopener">Share feedback or a correction</a></p>
   </footer>
 
-  <script src="app.js?v=2"></script>
+  <script src="app.js?v=3"></script>
 </body>
 </html>
