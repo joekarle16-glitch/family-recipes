@@ -229,6 +229,23 @@ a { color: var(--pine); }
   color: rgba(255, 255, 255, 0.7);
 }
 
+/* ---------- Page head & section head ---------- */
+
+.page-head { padding: 2.4rem 0 0.5rem; }
+.page-head h1 { margin: 0 0 0.6rem; }
+
+.section-head {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 1rem;
+  margin: 2.6rem 0 1.2rem;
+}
+.section-head h2 { margin: 0; }
+.section-head p { margin: 0; font-size: 0.95rem; }
+.section-head a { text-decoration: none; }
+.section-head a:hover { text-decoration: underline; }
+
 /* ---------- How it works ---------- */
 
 .how {

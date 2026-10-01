@@ -14,16 +14,17 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,500;9..144,600&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="styles.css?v=3">
+  <link rel="stylesheet" href="styles.css?v=4">
 </head>
 <body>
   <header class="site-header">
     <div class="wrap header-inner">
       <a class="brand" href="index.html">The Karle Family Kitchen</a>
       <nav>
-        <a href="index.html" class="active">Recipes</a>
+        <a href="index.html" class="active">Home</a>
+        <a href="recipes.html">Recipes</a>
         <a href="about.html">About</a>
-        <a href="https://docs.google.com/forms/d/e/1FAIpQLSeMjujj2V8r2qpa9AzD3FdnhOJYmLnaT23Jv3LP4Be8rbk6rA/viewform" target="_blank" rel="noopener">Add a recipe</a>
+        <a href="add.html">Add a recipe</a>
       </nav>
     </div>
   </header>
@@ -36,8 +37,8 @@
       <h1>Recipes worth keeping.</h1>
       <p class="lede">The dishes we grew up on, written down exactly as they were taught. Every card from the box, kept word for word.</p>
       <p class="cta-row">
-        <a class="btn" href="https://docs.google.com/forms/d/e/1FAIpQLSeMjujj2V8r2qpa9AzD3FdnhOJYmLnaT23Jv3LP4Be8rbk6rA/viewform" target="_blank" rel="noopener">Add a family recipe</a>
-        <a class="btn ghost" href="#grid">Browse the recipes</a>
+        <a class="btn" href="add.html">Add a family recipe</a>
+        <a class="btn ghost" href="recipes.html">Browse the recipes</a>
       </p>
       <div class="stats" aria-label="Collection stats">
         <div><strong id="stat-recipes">&ndash;</strong><span>Recipes</span></div>
@@ -53,13 +54,13 @@
       <div class="how-step"><span class="how-num">3</span><h3>Everyone cooks</h3><p>New recipes land here for the whole family to use.</p></div>
     </section>
 
-    <section class="controls">
-      <input id="search" type="search" placeholder="Search recipes, cooks, or ingredients" aria-label="Search recipes">
-      <div id="categories" class="chips" aria-label="Filter by category"></div>
+    <section aria-label="Recently added recipes">
+      <div class="section-head">
+        <h2>Fresh from the box</h2>
+        <p><a href="recipes.html">Browse all recipes &rarr;</a></p>
+      </div>
+      <div id="preview-grid" class="grid" aria-live="polite"></div>
     </section>
-
-    <section id="grid" class="grid" aria-live="polite"></section>
-    <p id="empty" class="empty" hidden>Nothing by that name yet. Try a different word.</p>
   </main>
 
   <footer class="site-footer">
@@ -68,6 +69,6 @@
     <p><a href="https://docs.google.com/forms/d/e/1FAIpQLSdMkBRr1ul1rF6vRf6hXzCZIHddtsfy7_9gn89YjlPJ9ZGVbg/viewform" target="_blank" rel="noopener">Share feedback or a correction</a></p>
   </footer>
 
-  <script src="app.js?v=3"></script>
+  <script src="app.js?v=4"></script>
 </body>
 </html>

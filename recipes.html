@@ -3,12 +3,12 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Recipe | The Karle Family Kitchen</title>
-  <meta name="description" content="The Karle family recipe collection. The dishes we grew up on, written down exactly as they were taught.">
-  <meta property="og:title" content="Recipe | The Karle Family Kitchen">
-  <meta property="og:description" content="The dishes we grew up on, written down exactly as they were taught. Every card from the box, kept word for word.">
+  <title>Recipes | The Karle Family Kitchen</title>
+  <meta name="description" content="Every recipe in the Karle family collection. Search by dish, cook, or ingredient.">
+  <meta property="og:title" content="Recipes | The Karle Family Kitchen">
+  <meta property="og:description" content="Every recipe in the Karle family collection, written down exactly as they were taught.">
   <meta property="og:type" content="website">
-  <meta property="og:url" content="https://karlekitchen.com/">
+  <meta property="og:url" content="https://karlekitchen.com/recipes.html">
   <link rel="icon" href="images/favicon.svg" type="image/svg+xml">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -21,16 +21,25 @@
       <a class="brand" href="index.html">The Karle Family Kitchen</a>
       <nav>
         <a href="index.html">Home</a>
-        <a href="recipes.html">Recipes</a>
+        <a href="recipes.html" class="active">Recipes</a>
         <a href="about.html">About</a>
         <a href="add.html">Add a recipe</a>
       </nav>
     </div>
   </header>
 
-  <main class="wrap">
-    <p class="back"><a href="recipes.html">&larr; Back to all recipes</a></p>
-    <article id="recipe-detail" aria-live="polite"></article>
+  <main class="wrap page-head">
+    <p class="eyebrow">The collection</p>
+    <h1>Every recipe in the box.</h1>
+    <p class="lede">Search by dish, cook, or ingredient. Tap a card for the full recipe.</p>
+
+    <section class="controls">
+      <input id="search" type="search" placeholder="Search recipes, cooks, or ingredients" aria-label="Search recipes">
+      <div id="categories" class="chips" aria-label="Filter by category"></div>
+    </section>
+
+    <section id="grid" class="grid" aria-live="polite"></section>
+    <p id="empty" class="empty" hidden>Nothing by that name yet. Try a different word.</p>
   </main>
 
   <footer class="site-footer">

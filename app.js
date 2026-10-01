@@ -2,8 +2,12 @@ document.addEventListener("DOMContentLoaded", init);
 
 async function init() {
   const recipes = await loadRecipes();
+  initStats(recipes);
   if (document.getElementById("grid")) {
-    initHome(recipes);
+    initGrid(recipes);
+  }
+  if (document.getElementById("preview-grid")) {
+    initPreview(recipes);
   }
   const detail = document.getElementById("recipe-detail");
   if (detail) {
@@ -111,12 +115,7 @@ function exampleBadge(recipe) {
     : "";
 }
 
-function initHome(recipes) {
-  const grid = document.getElementById("grid");
-  const empty = document.getElementById("empty");
-  const search = document.getElementById("search");
-  const chipsWrap = document.getElementById("categories");
-
+function initStats(recipes) {
   const statRecipes = document.getElementById("stat-recipes");
   if (statRecipes) statRecipes.textContent = recipes.length;
   const statCooks = document.getElementById("stat-cooks");
@@ -125,6 +124,47 @@ function initHome(recipes) {
       recipes.map((r) => r.attribution).filter(Boolean)
     ).size;
   }
+}
+
+function cardHtml(r) {
+  return (
+    `<a class="card" href="recipe.html?id=${encodeURIComponent(r.id)}">` +
+    `<span class="card-media">` +
+    `<img src="${esc(photoFor(r))}" alt="${esc(r.title)}" loading="lazy">` +
+    `<span class="view"><span>View recipe</span><span aria-hidden="true">&rarr;</span></span>` +
+    `</span>` +
+    `<div class="card-body">` +
+    (r.category ? `<span class="card-tag">${esc(r.category)}</span>` : "") +
+    `<h2>${esc(r.title)}</h2>` +
+    (r.attribution ? `<p class="byline">From ${esc(r.attribution)}</p>` : "") +
+    exampleBadge(r) +
+    `</div></a>`
+  );
+}
+
+function wireImageFallback(scope) {
+  scope.querySelectorAll("img").forEach((img) => {
+    img.addEventListener("error", () => {
+      if (!img.dataset.fallback) {
+        img.dataset.fallback = "1";
+        img.src = "images/placeholder.svg";
+      }
+    });
+  });
+}
+
+function initPreview(recipes) {
+  const grid = document.getElementById("preview-grid");
+  const latest = recipes.slice(-3).reverse();
+  grid.innerHTML = latest.map(cardHtml).join("");
+  wireImageFallback(grid);
+}
+
+function initGrid(recipes) {
+  const grid = document.getElementById("grid");
+  const empty = document.getElementById("empty");
+  const search = document.getElementById("search");
+  const chipsWrap = document.getElementById("categories");
 
   const categories = ["All"];
   recipes.forEach((r) => {
@@ -172,34 +212,11 @@ function initHome(recipes) {
     return hay.includes(query);
   }
 
-  function cardHtml(r) {
-    return (
-      `<a class="card" href="recipe.html?id=${encodeURIComponent(r.id)}">` +
-      `<span class="card-media">` +
-      `<img src="${esc(photoFor(r))}" alt="${esc(r.title)}" loading="lazy">` +
-      `<span class="view"><span>View recipe</span><span aria-hidden="true">&rarr;</span></span>` +
-      `</span>` +
-      `<div class="card-body">` +
-      (r.category ? `<span class="card-tag">${esc(r.category)}</span>` : "") +
-      `<h2>${esc(r.title)}</h2>` +
-      (r.attribution ? `<p class="byline">From ${esc(r.attribution)}</p>` : "") +
-      exampleBadge(r) +
-      `</div></a>`
-    );
-  }
-
   function draw() {
     const list = recipes.filter(matches);
     grid.innerHTML = list.map(cardHtml).join("");
     empty.hidden = list.length > 0;
-    grid.querySelectorAll("img").forEach((img) => {
-      img.addEventListener("error", () => {
-        if (!img.dataset.fallback) {
-          img.dataset.fallback = "1";
-          img.src = "images/placeholder.svg";
-        }
-      });
-    });
+    wireImageFallback(grid);
   }
 
   draw();
@@ -214,7 +231,7 @@ function renderDetail(recipes, root) {
     root.innerHTML =
       "<div class='recipe-head'><h1>Recipe not found</h1>" +
       "<p class='byline'>That recipe is not on the site yet. " +
-      "<a href='index.html'>Back to all recipes</a>.</p></div>";
+      "<a href='recipes.html'>Back to all recipes</a>.</p></div>";
     return;
   }
 
