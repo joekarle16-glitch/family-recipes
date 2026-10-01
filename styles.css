@@ -1,0 +1,584 @@
+/* The Karle Family Kitchen
+   Warm, print-inspired family design. System font stacks only:
+   nothing external, so the site renders identically for decades. */
+
+:root {
+  --paper: #f7f1e4;
+  --paper-soft: #fbf7ec;
+  --card: #fffdf7;
+  --ink: #2e241a;
+  --ink-soft: #4a3d2f;
+  --muted: #6f5f4d;
+  --accent: #a34d24;
+  --accent-deep: #7c3617;
+  --gold: #b98a2f;
+  --line: #e2d3b6;
+  --tag-bg: #f4e8d2;
+  --header-bg: #251c13;
+  --radius: 14px;
+  --serif: "Iowan Old Style", "Palatino Linotype", Palatino, Georgia, "Times New Roman", serif;
+  --sans: system-ui, -apple-system, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+}
+
+* { box-sizing: border-box; }
+
+html { -webkit-text-size-adjust: 100%; }
+
+body {
+  margin: 0;
+  color: var(--ink);
+  font-family: var(--sans);
+  line-height: 1.65;
+  background:
+    radial-gradient(1100px 520px at 50% -8%, var(--paper-soft) 0%, transparent 60%),
+    var(--paper);
+}
+
+::selection { background: var(--accent); color: #fff; }
+
+.wrap {
+  max-width: 1040px;
+  margin: 0 auto;
+  padding: 0 1.4rem;
+}
+
+a { color: var(--accent-deep); }
+
+:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 3px;
+  border-radius: 4px;
+}
+
+/* ---------- Header ---------- */
+
+.site-header {
+  background: linear-gradient(180deg, #1e1610, var(--header-bg));
+  border-bottom: 3px solid var(--accent);
+  position: sticky;
+  top: 0;
+  z-index: 10;
+}
+
+.header-inner {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  padding-top: 1rem;
+  padding-bottom: 1rem;
+}
+
+.brand {
+  font-family: var(--serif);
+  font-size: 1.45rem;
+  color: #f7f1e4;
+  text-decoration: none;
+  letter-spacing: 0.015em;
+}
+
+.brand:hover { color: #fff; }
+
+.site-header nav { display: flex; gap: 1.4rem; }
+
+.site-header nav a {
+  color: #d9c9a9;
+  text-decoration: none;
+  font-size: 0.92rem;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+
+.site-header nav a:hover { color: #fff; }
+.site-header nav a.active { color: #fff; font-weight: 600; }
+
+/* ---------- Hero ---------- */
+
+.hero {
+  text-align: center;
+  padding: 3.4rem 0 1.2rem;
+}
+
+.eyebrow {
+  font-size: 0.78rem;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  color: var(--accent-deep);
+  font-weight: 700;
+  margin: 0 0 0.9rem;
+}
+
+.hero h1 {
+  font-family: var(--serif);
+  font-weight: 400;
+  font-size: clamp(2.3rem, 5vw, 3.2rem);
+  line-height: 1.12;
+  margin: 0;
+  letter-spacing: 0.005em;
+}
+
+.hero h1 em {
+  font-style: italic;
+  color: var(--accent-deep);
+}
+
+.rule {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.8rem;
+  margin: 1.4rem auto;
+}
+
+.rule::before,
+.rule::after {
+  content: "";
+  height: 1px;
+  width: 84px;
+  background: var(--line);
+}
+
+.rule span {
+  width: 9px;
+  height: 9px;
+  background: var(--accent);
+  transform: rotate(45deg);
+  display: block;
+}
+
+.hero .lede {
+  color: var(--muted);
+  max-width: 36rem;
+  margin: 0 auto;
+  font-size: 1.06rem;
+}
+
+/* ---------- Controls ---------- */
+
+.controls {
+  display: flex;
+  flex-direction: column;
+  gap: 0.8rem;
+  margin: 1.8rem auto 2.2rem;
+  max-width: 640px;
+}
+
+#search {
+  padding: 0.75rem 1.2rem;
+  font-size: 1rem;
+  font-family: var(--sans);
+  border: 1px solid var(--line);
+  border-radius: 999px;
+  background: var(--card);
+  color: var(--ink);
+  width: 100%;
+  box-shadow: 0 2px 8px rgba(46, 36, 26, 0.05);
+}
+
+#search::placeholder { color: #a08e76; }
+
+#search:focus {
+  outline: 2px solid var(--accent);
+  outline-offset: 1px;
+}
+
+.chips { display: flex; flex-wrap: wrap; gap: 0.55rem; justify-content: center; }
+
+.chip {
+  border: 1px solid var(--line);
+  background: var(--card);
+  color: var(--muted);
+  border-radius: 999px;
+  padding: 0.34rem 1rem;
+  font-size: 0.86rem;
+  font-family: var(--sans);
+  cursor: pointer;
+  letter-spacing: 0.02em;
+  transition: border-color 0.15s, color 0.15s, background 0.15s;
+}
+
+.chip:hover { border-color: var(--accent); color: var(--accent-deep); }
+
+.chip.active {
+  background: var(--accent);
+  border-color: var(--accent);
+  color: #fff;
+  font-weight: 600;
+}
+
+/* ---------- Recipe grid ---------- */
+
+.grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(272px, 1fr));
+  gap: 1.7rem;
+  padding-bottom: 4rem;
+}
+
+.card {
+  background: var(--card);
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  overflow: hidden;
+  text-decoration: none;
+  color: inherit;
+  display: flex;
+  flex-direction: column;
+  box-shadow: 0 3px 14px rgba(46, 36, 26, 0.06);
+  transition: transform 0.18s ease, box-shadow 0.18s ease;
+}
+
+.card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 14px 32px rgba(46, 36, 26, 0.14);
+}
+
+.card-media {
+  position: relative;
+  overflow: hidden;
+  background: var(--tag-bg);
+}
+
+.card-media img {
+  width: 100%;
+  aspect-ratio: 4 / 3;
+  object-fit: cover;
+  display: block;
+  transition: transform 0.45s ease;
+}
+
+.card:hover .card-media img { transform: scale(1.045); }
+
+.card-media .view {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  padding: 2.6rem 1.1rem 0.85rem;
+  background: linear-gradient(transparent, rgba(30, 22, 16, 0.78));
+  color: #fff;
+  font-size: 0.88rem;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  font-weight: 600;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  opacity: 0;
+  transition: opacity 0.25s ease;
+}
+
+.card:hover .card-media .view,
+.card:focus-visible .card-media .view { opacity: 1; }
+
+.card-body { padding: 1.05rem 1.2rem 1.3rem; }
+
+.card-tag {
+  display: inline-block;
+  color: var(--accent-deep);
+  font-size: 0.72rem;
+  font-weight: 700;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  margin-bottom: 0.45rem;
+}
+
+.card h2 {
+  font-family: var(--serif);
+  font-weight: 400;
+  font-size: 1.42rem;
+  line-height: 1.25;
+  margin: 0 0 0.3rem;
+}
+
+.card .byline {
+  color: var(--muted);
+  font-size: 0.92rem;
+  font-style: italic;
+  font-family: var(--serif);
+  margin: 0;
+}
+
+.example-ribbon {
+  display: inline-block;
+  margin-top: 0.7rem;
+  font-size: 0.72rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--accent-deep);
+  border: 1px dashed var(--accent);
+  border-radius: 6px;
+  padding: 0.18rem 0.6rem;
+  background: #fdf6e8;
+}
+
+.empty {
+  text-align: center;
+  color: var(--muted);
+  font-family: var(--serif);
+  font-style: italic;
+  font-size: 1.1rem;
+  padding: 2rem 0 4rem;
+}
+
+/* ---------- Recipe detail ---------- */
+
+.back { margin: 1.6rem 0 0; font-size: 0.92rem; }
+.back a { text-decoration: none; }
+.back a:hover { text-decoration: underline; }
+
+.recipe-head { margin: 1.1rem 0 1.6rem; max-width: 46rem; }
+
+.recipe-head .card-tag { margin-bottom: 0.6rem; }
+
+.recipe-head h1 {
+  font-family: var(--serif);
+  font-weight: 400;
+  font-size: clamp(2.1rem, 4.5vw, 2.9rem);
+  line-height: 1.1;
+  margin: 0 0 0.45rem;
+  letter-spacing: 0.005em;
+}
+
+.recipe-head .byline {
+  color: var(--muted);
+  margin: 0;
+  font-family: var(--serif);
+  font-style: italic;
+  font-size: 1.05rem;
+}
+
+.recipe-head .desc {
+  margin: 1.1rem 0 0;
+  font-size: 1.06rem;
+  color: var(--ink-soft);
+}
+
+.recipe-head .desc.lede::first-letter {
+  font-family: var(--serif);
+  font-size: 3.1em;
+  float: left;
+  line-height: 0.82;
+  padding-right: 0.14em;
+  padding-top: 0.05em;
+  color: var(--accent-deep);
+}
+
+.recipe-photo {
+  width: 100%;
+  max-height: 440px;
+  object-fit: cover;
+  border-radius: 16px;
+  border: 1px solid var(--line);
+  background: var(--tag-bg);
+  display: block;
+  margin-bottom: 2rem;
+  box-shadow: 0 12px 34px rgba(46, 36, 26, 0.12);
+}
+
+.meta-row {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+  gap: 1rem;
+  margin-bottom: 2.2rem;
+  padding: 1.15rem 1.4rem;
+  background: var(--card);
+  border: 1px solid var(--line);
+  border-top: 3px solid var(--accent);
+  border-radius: 0 0 var(--radius) var(--radius);
+  box-shadow: 0 3px 14px rgba(46, 36, 26, 0.05);
+}
+
+.meta-row div span {
+  display: block;
+  font-size: 0.72rem;
+  text-transform: uppercase;
+  letter-spacing: 0.12em;
+  color: var(--muted);
+  margin-bottom: 0.15rem;
+}
+
+.meta-row div strong {
+  font-family: var(--serif);
+  font-size: 1.12rem;
+  font-weight: 400;
+}
+
+.two-col {
+  display: grid;
+  grid-template-columns: 5fr 7fr;
+  gap: 2.4rem;
+  padding-bottom: 1rem;
+  align-items: start;
+}
+
+@media (max-width: 740px) {
+  .two-col { grid-template-columns: 1fr; }
+}
+
+.two-col h2 {
+  font-family: var(--serif);
+  font-weight: 400;
+  font-size: 1.5rem;
+  margin: 0 0 1rem;
+  padding-bottom: 0.45rem;
+  border-bottom: 1px solid var(--line);
+}
+
+ul.ingredients {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  background: var(--card);
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  padding: 1.2rem 1.3rem;
+  box-shadow: 0 3px 14px rgba(46, 36, 26, 0.05);
+}
+
+ul.ingredients li {
+  padding: 0.42rem 0 0.42rem 1.7rem;
+  position: relative;
+  border-bottom: 1px dotted var(--line);
+}
+
+ul.ingredients li:last-child { border-bottom: none; }
+
+ul.ingredients li::before {
+  content: "";
+  position: absolute;
+  left: 0.2rem;
+  top: 0.95rem;
+  width: 7px;
+  height: 7px;
+  background: var(--accent);
+  transform: rotate(45deg);
+}
+
+ol.steps {
+  list-style: none;
+  counter-reset: step;
+  padding: 0;
+  margin: 0;
+}
+
+ol.steps li {
+  counter-increment: step;
+  position: relative;
+  padding: 0 0 1.3rem 3.4rem;
+}
+
+ol.steps li::before {
+  content: counter(step);
+  position: absolute;
+  left: 0;
+  top: -0.15rem;
+  font-family: var(--serif);
+  font-size: 1.9rem;
+  line-height: 1;
+  color: var(--accent);
+  width: 2.6rem;
+}
+
+ol.steps li::after {
+  content: "";
+  position: absolute;
+  left: 0.85rem;
+  top: 2.2rem;
+  bottom: 0.1rem;
+  width: 1px;
+  background: var(--line);
+}
+
+ol.steps li:last-child::after { display: none; }
+
+/* Handwriting note, styled like a kept index card */
+
+.note-box {
+  background: var(--card);
+  border: 1px solid var(--line);
+  border-left: 4px solid var(--accent);
+  border-radius: 0 10px 10px 0;
+  padding: 1.1rem 1.35rem;
+  margin: 0 0 2.2rem;
+  box-shadow: 0 3px 14px rgba(46, 36, 26, 0.06);
+  max-width: 46rem;
+}
+
+.note-box h3 {
+  margin: 0 0 0.45rem;
+  font-family: var(--serif);
+  font-weight: 400;
+  font-size: 1.15rem;
+  color: var(--accent-deep);
+}
+
+.note-box p { margin: 0.35rem 0; font-size: 0.96rem; }
+.note-box .ref { font-weight: 700; }
+
+.source-note {
+  color: var(--muted);
+  font-size: 0.9rem;
+  font-style: italic;
+  font-family: var(--serif);
+  padding: 1.6rem 0 3.5rem;
+  border-top: 1px solid var(--line);
+  margin-top: 1.5rem;
+}
+
+/* ---------- About page ---------- */
+
+.about { padding: 2.4rem 0 3.5rem; max-width: 44rem; }
+
+.about h1 {
+  font-family: var(--serif);
+  font-weight: 400;
+  font-size: clamp(1.9rem, 4vw, 2.5rem);
+  margin: 0 0 1rem;
+}
+
+.about h2 {
+  font-family: var(--serif);
+  font-weight: 400;
+  font-size: 1.45rem;
+  margin: 2.2rem 0 0.6rem;
+  color: var(--accent-deep);
+}
+
+.about p { color: var(--ink-soft); }
+
+.about .standfirst {
+  font-family: var(--serif);
+  font-size: 1.2rem;
+  font-style: italic;
+  color: var(--ink);
+  border-left: 3px solid var(--accent);
+  padding-left: 1.1rem;
+  margin: 1.4rem 0 2rem;
+}
+
+/* ---------- Footer ---------- */
+
+.site-footer {
+  background: linear-gradient(180deg, var(--header-bg), #1e1610);
+  border-top: 3px solid var(--accent);
+  text-align: center;
+  color: #cbb894;
+  font-size: 0.9rem;
+  padding: 2rem 1.2rem;
+}
+
+.site-footer .colophon {
+  font-family: var(--serif);
+  font-style: italic;
+  font-size: 1.02rem;
+  color: #f0e6cf;
+}
+
+.site-footer p { margin: 0.3rem 0; }
+
+@media (prefers-reduced-motion: reduce) {
+  .card, .card-media img, .card-media .view { transition: none; }
+  .card:hover { transform: none; }
+}

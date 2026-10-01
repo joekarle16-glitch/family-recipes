@@ -1,0 +1,185 @@
+document.addEventListener("DOMContentLoaded", init);
+
+async function init() {
+  const recipes = await loadRecipes();
+  if (document.getElementById("grid")) {
+    initHome(recipes);
+  }
+  const detail = document.getElementById("recipe-detail");
+  if (detail) {
+    renderDetail(recipes, detail);
+  }
+}
+
+async function loadRecipes() {
+  try {
+    const res = await fetch("recipes.json", { cache: "no-store" });
+    if (!res.ok) throw new Error("Could not load recipes.json");
+    const data = await res.json();
+    return Array.isArray(data.recipes) ? data.recipes : [];
+  } catch (err) {
+    return [];
+  }
+}
+
+function esc(value) {
+  return String(value == null ? "" : value)
+    .replace(/&/g, "&amp;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;")
+    .replace(/"/g, "&quot;")
+    .replace(/'/g, "&#39;");
+}
+
+function photoFor(recipe) {
+  return recipe.photo || "images/placeholder.svg";
+}
+
+function exampleBadge(recipe) {
+  return recipe.example
+    ? '<span class="example-ribbon">Example entry</span>'
+    : "";
+}
+
+function initHome(recipes) {
+  const grid = document.getElementById("grid");
+  const empty = document.getElementById("empty");
+  const search = document.getElementById("search");
+  const chipsWrap = document.getElementById("categories");
+
+  const categories = ["All"];
+  recipes.forEach((r) => {
+    if (r.category && !categories.includes(r.category)) categories.push(r.category);
+  });
+
+  let activeCategory = "All";
+  let query = "";
+
+  chipsWrap.innerHTML = categories
+    .map(
+      (c) =>
+        `<button class="chip${c === "All" ? " active" : ""}" data-cat="${esc(c)}">${esc(c)}</button>`
+    )
+    .join("");
+
+  chipsWrap.querySelectorAll(".chip").forEach((chip) => {
+    chip.addEventListener("click", () => {
+      activeCategory = chip.dataset.cat;
+      chipsWrap
+        .querySelectorAll(".chip")
+        .forEach((el) => el.classList.remove("active"));
+      chip.classList.add("active");
+      draw();
+    });
+  });
+
+  search.addEventListener("input", () => {
+    query = search.value.trim().toLowerCase();
+    draw();
+  });
+
+  function matches(r) {
+    const inCategory = activeCategory === "All" || r.category === activeCategory;
+    if (!inCategory) return false;
+    if (!query) return true;
+    const hay = [
+      r.title,
+      r.description,
+      r.attribution,
+      (r.ingredients || []).join(" "),
+    ]
+      .join(" ")
+      .toLowerCase();
+    return hay.includes(query);
+  }
+
+  function cardHtml(r) {
+    return (
+      `<a class="card" href="recipe.html?id=${encodeURIComponent(r.id)}">` +
+      `<span class="card-media">` +
+      `<img src="${esc(photoFor(r))}" alt="${esc(r.title)}" loading="lazy">` +
+      `<span class="view"><span>View recipe</span><span aria-hidden="true">&rarr;</span></span>` +
+      `</span>` +
+      `<div class="card-body">` +
+      (r.category ? `<span class="card-tag">${esc(r.category)}</span>` : "") +
+      `<h2>${esc(r.title)}</h2>` +
+      (r.attribution ? `<p class="byline">From ${esc(r.attribution)}</p>` : "") +
+      exampleBadge(r) +
+      `</div></a>`
+    );
+  }
+
+  function draw() {
+    const list = recipes.filter(matches);
+    grid.innerHTML = list.map(cardHtml).join("");
+    empty.hidden = list.length > 0;
+    grid.querySelectorAll("img").forEach((img) => {
+      img.addEventListener("error", () => {
+        if (!img.dataset.fallback) {
+          img.dataset.fallback = "1";
+          img.src = "images/placeholder.svg";
+        }
+      });
+    });
+  }
+
+  draw();
+}
+
+function renderDetail(recipes, root) {
+  const params = new URLSearchParams(window.location.search);
+  const id = params.get("id");
+  const recipe = recipes.find((r) => r.id === id);
+
+  if (!recipe) {
+    root.innerHTML =
+      "<div class='recipe-head'><h1>Recipe not found</h1>" +
+      "<p class='byline'>That recipe is not on the site yet. " +
+      "<a href='index.html'>Back to all recipes</a>.</p></div>";
+    return;
+  }
+
+  document.title = recipe.title + " | The Karle Family Kitchen";
+
+  const notes = (recipe.handwritingNotes || [])
+    .map((n) => `<p><span class="ref">${esc(n.ref)}:</span> ${esc(n.note)}</p>`)
+    .join("");
+
+  const exampleBanner = recipe.example
+    ? `<div class="note-box"><h3>Example entry</h3>` +
+      `<p>This recipe shows the format every entry follows. It will be replaced with a real family recipe soon.</p></div>`
+    : "";
+
+  root.innerHTML =
+    exampleBanner +
+    `<div class="recipe-head">` +
+    (recipe.category ? `<span class="card-tag">${esc(recipe.category)}</span>` : "") +
+    `<h1>${esc(recipe.title)}</h1>` +
+    (recipe.attribution ? `<p class="byline">From ${esc(recipe.attribution)}</p>` : "") +
+    (recipe.description ? `<p class="desc lede">${esc(recipe.description)}</p>` : "") +
+    `</div>` +
+    `<img class="recipe-photo" src="${esc(photoFor(recipe))}" alt="${esc(recipe.title)}">` +
+    `<div class="meta-row">` +
+    (recipe.servings ? `<div><span>Servings</span><strong>${esc(recipe.servings)}</strong></div>` : "") +
+    (recipe.prepTime ? `<div><span>Prep</span><strong>${esc(recipe.prepTime)}</strong></div>` : "") +
+    (recipe.cookTime ? `<div><span>Cook</span><strong>${esc(recipe.cookTime)}</strong></div>` : "") +
+    `</div>` +
+    (notes ? `<div class="note-box"><h3>A note on the original card</h3>${notes}</div>` : "") +
+    `<div class="two-col">` +
+    `<div><h2>Ingredients</h2><ul class="ingredients">${(recipe.ingredients || [])
+      .map((i) => `<li>${esc(i)}</li>`)
+      .join("")}</ul></div>` +
+    `<div><h2>Steps</h2><ol class="steps">${(recipe.steps || [])
+      .map((s) => `<li>${esc(s)}</li>`)
+      .join("")}</ol></div>` +
+    `</div>` +
+    (recipe.sourceNote ? `<p class="source-note">${esc(recipe.sourceNote)}</p>` : "");
+
+  const photo = root.querySelector(".recipe-photo");
+  photo.addEventListener("error", () => {
+    if (!photo.dataset.fallback) {
+      photo.dataset.fallback = "1";
+      photo.src = "images/placeholder.svg";
+    }
+  });
+}

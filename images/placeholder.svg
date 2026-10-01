@@ -1,0 +1,9 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="800" height="600" viewBox="0 0 800 600">
+  <rect width="800" height="600" fill="#f3e7d1"/>
+  <circle cx="400" cy="250" r="110" fill="none" stroke="#b0532b" stroke-width="10"/>
+  <circle cx="400" cy="250" r="68" fill="none" stroke="#b0532b" stroke-width="6" opacity="0.45"/>
+  <line x1="252" y1="172" x2="186" y2="132" stroke="#b0532b" stroke-width="10" stroke-linecap="round"/>
+  <line x1="548" y1="172" x2="614" y2="132" stroke="#b0532b" stroke-width="10" stroke-linecap="round"/>
+  <text x="400" y="440" text-anchor="middle" font-family="Georgia, 'Times New Roman', serif" font-size="42" fill="#3b2f26">Photo coming soon</text>
+  <text x="400" y="482" text-anchor="middle" font-family="system-ui, sans-serif" font-size="22" fill="#7c6c5d">The real dish photo goes here</text>
+</svg>

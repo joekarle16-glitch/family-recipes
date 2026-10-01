@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>The Karle Family Kitchen</title>
+  <meta name="description" content="The Karle family recipe collection. Recipes worth keeping, preserved for the whole family.">
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <header class="site-header">
+    <div class="wrap header-inner">
+      <a class="brand" href="index.html">The Karle Family Kitchen</a>
+      <nav>
+        <a href="index.html" class="active">Recipes</a>
+        <a href="about.html">About</a>
+      </nav>
+    </div>
+  </header>
+
+  <main class="wrap">
+    <section class="hero">
+      <p class="eyebrow">The Karle Family Collection</p>
+      <h1>Recipes worth <em>keeping</em>.</h1>
+      <div class="rule" aria-hidden="true"><span></span></div>
+      <p class="lede">Every family has dishes that taste like home. This is where ours live, written down the way they were taught, so nobody ever has to guess.</p>
+    </section>
+
+    <section class="controls">
+      <input id="search" type="search" placeholder="Search recipes or ingredients" aria-label="Search recipes">
+      <div id="categories" class="chips" aria-label="Filter by category"></div>
+    </section>
+
+    <section id="grid" class="grid" aria-live="polite"></section>
+    <p id="empty" class="empty" hidden>No recipes match your search yet. Try a different word.</p>
+  </main>
+
+  <footer class="site-footer">
+    <p class="colophon">Made with care by the Karle family.</p>
+    <p>Curated by Joe and Jim. More recipes on the way.</p>
+  </footer>
+
+  <script src="app.js"></script>
+</body>
+</html>
