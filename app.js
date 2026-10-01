@@ -13,6 +13,77 @@ async function init() {
   if (gallery) {
     initGallery(gallery);
   }
+  initSlideshow();
+}
+
+async function initSlideshow() {
+  const slidesEl = document.getElementById("slides");
+  if (!slidesEl) return;
+  let photos = [];
+  try {
+    const res = await fetch("family-photos.json", { cache: "no-store" });
+    if (res.ok) {
+      const data = await res.json();
+      photos = Array.isArray(data.photos) ? data.photos : [];
+    }
+  } catch (err) {
+    /* no slideshow until photos arrive */
+  }
+  const frame = slidesEl.closest(".slideshow");
+  if (!photos.length) {
+    frame.hidden = true;
+    return;
+  }
+  slidesEl.innerHTML = photos
+    .map(
+      (p, i) =>
+        `<figure class="slide${i === 0 ? " active" : ""}" role="group" aria-roledescription="slide" aria-label="${i + 1} of ${photos.length}">` +
+        `<img src="${esc(p.src)}" alt="${esc(p.caption || "Family photo")}"${i > 0 ? ' loading="lazy"' : ""}>` +
+        (p.caption ? `<figcaption>${esc(p.caption)}</figcaption>` : "") +
+        `</figure>`
+    )
+    .join("");
+  const dotsEl = document.getElementById("slide-dots");
+  dotsEl.innerHTML = photos
+    .map(
+      (_, i) =>
+        `<button role="tab" aria-selected="${i === 0 ? "true" : "false"}" aria-label="Photo ${i + 1}"></button>`
+    )
+    .join("");
+  const slides = Array.from(slidesEl.children);
+  const dots = Array.from(dotsEl.children);
+  const prevBtn = document.getElementById("slide-prev");
+  const nextBtn = document.getElementById("slide-next");
+  const reducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+  let current = 0;
+  let timer = null;
+
+  function go(n) {
+    slides[current].classList.remove("active");
+    dots[current].setAttribute("aria-selected", "false");
+    current = (n + photos.length) % photos.length;
+    slides[current].classList.add("active");
+    dots[current].setAttribute("aria-selected", "true");
+  }
+  function stop() {
+    if (timer) {
+      clearInterval(timer);
+      timer = null;
+    }
+  }
+  function play() {
+    if (reducedMotion) return;
+    stop();
+    timer = setInterval(() => go(current + 1), 6000);
+  }
+  prevBtn.addEventListener("click", () => { go(current - 1); play(); });
+  nextBtn.addEventListener("click", () => { go(current + 1); play(); });
+  dots.forEach((d, i) => d.addEventListener("click", () => { go(i); play(); }));
+  frame.addEventListener("mouseenter", stop);
+  frame.addEventListener("mouseleave", play);
+  frame.addEventListener("focusin", stop);
+  frame.addEventListener("focusout", play);
+  play();
 }
 
 async function initGallery(gallery) {
