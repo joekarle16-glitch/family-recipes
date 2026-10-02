@@ -253,7 +253,7 @@ function renderDetail(recipes, root) {
     `<h1>${esc(recipe.title)}</h1>` +
     (recipe.attribution ? `<p class="byline">From ${esc(recipe.attribution)}</p>` : "") +
     (recipe.description ? `<p class="desc lede">${esc(recipe.description)}</p>` : "") +
-    `<p class="jump-row"><a class="btn" href="#recipe-body">Jump to recipe</a></p>` +
+    `<p class="jump-row"><a class="btn" href="#recipe-body">Jump to recipe</a> <button type="button" class="btn outline" id="suggest-fix-btn">Suggest a correction</button></p>` +
     `</div>` +
     `<div class="read-aloud"><button type="button" class="btn" id="listen-btn" aria-pressed="false">Listen to this recipe</button></div>` +
     `<img class="recipe-photo" src="${esc(photoFor(recipe))}" alt="${esc(recipe.title)}">` +
@@ -288,6 +288,123 @@ function renderDetail(recipes, root) {
   });
 
   wireReadAloud(recipe);
+
+  wireCorrectionButton(recipe, function () {
+    renderDetail(recipes, root);
+  });
+}
+
+var CORRECTION_FORM_URL =
+  "https://docs.google.com/forms/d/e/1FAIpQLSc-meB2QzDrGFQPYtYJx9MpTlFVy1rfYH-TnDdHHEnWXLkFtw/viewform";
+var CORRECTION_ENTRIES = {
+  name: "entry.34cca197",
+  recipe: "entry.34da0302",
+  title: "entry.4e370f51",
+  description: "entry.36943bc6",
+  servings: "entry.1f60776b",
+  prep: "entry.7583f0d9",
+  cook: "entry.10adea09",
+  ingredients: "entry.065c720b",
+  steps: "entry.4d9d1aa7",
+};
+
+function wireCorrectionButton(recipe, rerender) {
+  var btn = document.getElementById("suggest-fix-btn");
+  if (!btn) return;
+  btn.addEventListener("click", function () {
+    renderEditMode(recipe, rerender);
+  });
+}
+
+function editField(label, id, value, opts) {
+  opts = opts || {};
+  var control;
+  if (opts.textarea) {
+    control =
+      '<textarea id="' + id + '" rows="' + opts.textarea + '">' + esc(value) + "</textarea>";
+  } else {
+    control =
+      '<input id="' + id + '" type="text" value="' + esc(value) + '" autocomplete="off">';
+  }
+  return (
+    '<label class="edit-field">' +
+    "<span>" +
+    esc(label) +
+    (opts.hint ? " <em>" + esc(opts.hint) + "</em>" : "") +
+    "</span>" +
+    control +
+    "</label>"
+  );
+}
+
+function renderEditMode(recipe, rerender) {
+  var root = document.getElementById("recipe-detail");
+  if (!root) return;
+  window.scrollTo({ top: 0, behavior: "smooth" });
+
+  root.innerHTML =
+    '<div class="note-box"><h3>Suggest a correction</h3>' +
+    "<p>Fix whatever is off below, add your name, and hit <strong>Send suggestion</strong>. " +
+    "It opens a short form with your edits filled in, you press submit there, and Joe or Jim will update the site. " +
+    "Nothing on the page changes until they review it.</p></div>" +
+    '<div class="edit-form">' +
+    editField("Your name", "edit-name", "", { hint: "so we know who to thank" }) +
+    editField("Recipe title", "edit-title", recipe.title || "") +
+    editField("Description", "edit-desc", recipe.description || "", { textarea: 3 }) +
+    '<div class="edit-grid">' +
+    editField("Servings", "edit-servings", recipe.servings || "") +
+    editField("Prep time", "edit-prep", recipe.prepTime || "") +
+    editField("Cook time", "edit-cook", recipe.cookTime || "") +
+    "</div>" +
+    editField("Ingredients", "edit-ingredients", (recipe.ingredients || []).join("\n"), {
+      textarea: 8,
+      hint: "one per line",
+    }) +
+    editField("Steps", "edit-steps", (recipe.steps || []).join("\n"), {
+      textarea: 10,
+      hint: "one per line",
+    }) +
+    '<div class="edit-actions">' +
+    '<button type="button" class="btn" id="send-correction-btn">Send suggestion</button>' +
+    '<button type="button" class="btn outline" id="cancel-correction-btn">Cancel</button>' +
+    "</div></div>";
+
+  document
+    .getElementById("cancel-correction-btn")
+    .addEventListener("click", rerender);
+  document
+    .getElementById("send-correction-btn")
+    .addEventListener("click", function () {
+      sendCorrection(recipe);
+    });
+}
+
+function editVal(id) {
+  var el = document.getElementById(id);
+  return el ? el.value.trim() : "";
+}
+
+function sendCorrection(recipe) {
+  var parts = [
+    [CORRECTION_ENTRIES.recipe, recipe.title || ""],
+    [CORRECTION_ENTRIES.title, editVal("edit-title")],
+    [CORRECTION_ENTRIES.description, editVal("edit-desc")],
+    [CORRECTION_ENTRIES.servings, editVal("edit-servings")],
+    [CORRECTION_ENTRIES.prep, editVal("edit-prep")],
+    [CORRECTION_ENTRIES.cook, editVal("edit-cook")],
+    [CORRECTION_ENTRIES.ingredients, editVal("edit-ingredients")],
+    [CORRECTION_ENTRIES.steps, editVal("edit-steps")],
+    [CORRECTION_ENTRIES.name, editVal("edit-name")],
+  ];
+  var query = parts
+    .filter(function (p) {
+      return p[1];
+    })
+    .map(function (p) {
+      return p[0] + "=" + encodeURIComponent(p[1]);
+    })
+    .join("&");
+  window.open(CORRECTION_FORM_URL + "?" + query, "_blank", "noopener");
 }
 
 function injectRecipeSchema(recipe) {
@@ -307,7 +424,10 @@ function injectRecipeSchema(recipe) {
   };
   const script = document.createElement("script");
   script.type = "application/ld+json";
+  script.id = "recipe-schema";
   script.textContent = JSON.stringify(schema);
+  const old = document.getElementById("recipe-schema");
+  if (old) old.remove();
   document.head.appendChild(script);
 }
 
