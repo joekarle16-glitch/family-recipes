@@ -431,6 +431,21 @@ function injectRecipeSchema(recipe) {
   document.head.appendChild(script);
 }
 
+function pickReadAloudVoice() {
+  try {
+    const voices = window.speechSynthesis.getVoices() || [];
+    if (!voices.length) return null;
+    const en = voices.filter((v) => /^en([-_]|$)/i.test(v.lang || ""));
+    const pool = en.length ? en : voices;
+    const natural =
+      pool.find((v) => /natural|enhanced|premium|neural/i.test(v.name || "")) || null;
+    if (natural) return natural;
+    return pool.find((v) => /^en-US/i.test(v.lang || "")) || pool[0] || null;
+  } catch (e) {
+    return null;
+  }
+}
+
 function wireReadAloud(recipe) {
   const btn = document.getElementById("listen-btn");
   if (!btn) return;
@@ -438,18 +453,21 @@ function wireReadAloud(recipe) {
     btn.remove();
     return;
   }
-  const text = [
+
+  const chunks = [];
+  const head = [
     recipe.title + ".",
     recipe.attribution ? "From " + recipe.attribution + "." : "",
     recipe.description || "",
-    "Ingredients. " + (recipe.ingredients || []).join(". "),
-    "Steps. " +
-      (recipe.steps || [])
-        .map((s, i) => "Step " + (i + 1) + ". " + s)
-        .join(" "),
   ]
     .filter(Boolean)
     .join(" ");
+  if (head) chunks.push(head);
+  const ingredients = recipe.ingredients || [];
+  if (ingredients.length) chunks.push("Ingredients. " + ingredients.join(". ") + ".");
+  (recipe.steps || []).forEach((s, i) => {
+    chunks.push("Step " + (i + 1) + ". " + s);
+  });
 
   let speaking = false;
   function stop() {
@@ -464,11 +482,18 @@ function wireReadAloud(recipe) {
       return;
     }
     window.speechSynthesis.cancel();
-    const utterance = new SpeechSynthesisUtterance(text);
-    utterance.rate = 0.95;
-    utterance.onend = stop;
-    utterance.onerror = stop;
-    window.speechSynthesis.speak(utterance);
+    const voice = pickReadAloudVoice();
+    chunks.forEach((text, i) => {
+      const utterance = new SpeechSynthesisUtterance(text);
+      utterance.rate = 0.9;
+      utterance.pitch = 1;
+      if (voice) utterance.voice = voice;
+      if (i === chunks.length - 1) {
+        utterance.onend = stop;
+        utterance.onerror = stop;
+      }
+      window.speechSynthesis.speak(utterance);
+    });
     speaking = true;
     btn.textContent = "Stop reading";
     btn.setAttribute("aria-pressed", "true");

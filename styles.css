@@ -489,14 +489,9 @@ a { color: var(--pine); }
   color: var(--ink-soft);
 }
 
-.recipe-head .desc.lede::first-letter {
-  font-family: var(--serif);
-  font-size: 3.1em;
-  float: left;
-  line-height: 0.82;
-  padding-right: 0.14em;
-  padding-top: 0.05em;
-  color: var(--pine);
+.recipe-head .desc.lede {
+  font-size: 1.06rem;
+  color: var(--ink-soft);
 }
 
 .recipe-photo {
@@ -772,7 +767,12 @@ ol.steps li:last-child::after { display: none; }
 
 #recipe-body { scroll-margin-top: 96px; }
 
-.jump-row { margin: 1.3rem 0 0; }
+.jump-row {
+  margin: 1.3rem 0 0;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.7rem;
+}
 
 ul.ingredients li { cursor: pointer; }
 
@@ -856,8 +856,6 @@ ol.steps li.done .step-text {
   ol.steps li::after { display: none; }
 
   ul.ingredients li, ol.steps li { cursor: default; }
-
-  .recipe-head .desc.lede::first-letter { font-size: 2em; float: none; line-height: 1.2; padding: 0; }
 }
 
 /* ---------- Mobile ---------- */
