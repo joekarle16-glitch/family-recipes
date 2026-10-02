@@ -105,6 +105,12 @@ function esc(value) {
     .replace(/'/g, "&#39;");
 }
 
+if ("serviceWorker" in navigator) {
+  window.addEventListener("load", function () {
+    navigator.serviceWorker.register("/sw.js").catch(function () {});
+  });
+}
+
 function photoFor(recipe) {
   return recipe.photo || "images/placeholder.svg";
 }
