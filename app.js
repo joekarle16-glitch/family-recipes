@@ -90,6 +90,7 @@ async function loadRecipes() {
     const res = await fetch("recipes.json", { cache: "no-store" });
     if (!res.ok) throw new Error("Could not load recipes.json");
     const data = await res.json();
+    collectionUpdated = typeof data.updated === "string" ? data.updated : "";
     return Array.isArray(data.recipes) ? data.recipes : [];
   } catch (err) {
     return [];
@@ -121,6 +122,15 @@ function exampleBadge(recipe) {
     : "";
 }
 
+var collectionUpdated = "";
+
+function fmtDate(iso) {
+  const m = /^(\d{4})-(\d{2})-(\d{2})$/.exec(iso || "");
+  if (!m) return "–";
+  const months = ["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"];
+  return months[parseInt(m[2], 10) - 1] + " " + parseInt(m[3], 10) + ", " + m[1];
+}
+
 function initStats(recipes) {
   const statRecipes = document.getElementById("stat-recipes");
   if (statRecipes) statRecipes.textContent = recipes.length;
@@ -130,6 +140,8 @@ function initStats(recipes) {
       recipes.map((r) => r.attribution).filter(Boolean)
     ).size;
   }
+  const statUpdated = document.getElementById("stat-updated");
+  if (statUpdated) statUpdated.textContent = fmtDate(collectionUpdated);
 }
 
 function parseMinutes(s) {
