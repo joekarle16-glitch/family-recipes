@@ -1337,18 +1337,26 @@ ul.ingredients li.ing-group span {
 /* Contribute band */
 .contribute-band {
   background: var(--pine-deep);
+  background-image: radial-gradient(ellipse 85% 95% at 50% 0%, rgba(185, 144, 63, 0.16), transparent 70%);
   border-top: 3px solid var(--brass);
   border-bottom: 3px solid var(--brass);
   color: var(--cream);
   text-align: center;
-  padding: 3rem 1.4rem;
+  padding: 3.2rem 1.4rem;
   margin: 1rem 0 0;
+}
+
+.contribute-ornament {
+  color: var(--brass);
+  letter-spacing: 0.6em;
+  margin: 0 0 1.1rem;
+  font-size: 0.85rem;
 }
 
 .contribute-band h2 {
   font-family: var(--serif);
   font-weight: 500;
-  font-size: clamp(1.6rem, 3.5vw, 2.1rem);
+  font-size: clamp(1.7rem, 4vw, 2.2rem);
   margin: 0 0 0.6rem;
   color: #fff;
 }
@@ -1428,8 +1436,17 @@ ul.ingredients li.ing-group span {
 .foot-brand p { max-width: 22rem; }
 
 @media (max-width: 640px) {
-  .foot-grid { grid-template-columns: 1fr 1fr; gap: 1.6rem; }
-  .foot-brand { grid-column: 1 / -1; }
+  .foot-grid {
+    grid-template-columns: 1fr;
+    gap: 2.1rem;
+    text-align: center;
+    max-width: 26rem;
+  }
+  .foot-brand { grid-column: auto; }
+  .foot-brand p { max-width: none; }
+  .foot-grid h4 { font-size: 0.82rem; margin-bottom: 0.8rem; }
+  .foot-grid nav a { margin-bottom: 0.6rem; font-size: 0.95rem; }
+  .site-footer { padding: 2.6rem 1.4rem; }
 }
 
 /* ---------- Mobile tab bar ---------- */
