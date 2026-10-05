@@ -355,12 +355,19 @@ a { color: var(--pine); }
   border: 1px solid var(--line);
   border-radius: var(--radius);
   overflow: hidden;
-  text-decoration: none;
-  color: inherit;
+  position: relative;
   display: flex;
   flex-direction: column;
   box-shadow: 0 3px 14px rgba(29, 58, 42, 0.06);
   transition: transform 0.18s ease, box-shadow 0.18s ease;
+}
+
+.card-link {
+  text-decoration: none;
+  color: inherit;
+  display: flex;
+  flex-direction: column;
+  flex: 1;
 }
 
 .card:hover {
@@ -408,6 +415,16 @@ a { color: var(--pine); }
 
 .card-body { padding: 1.05rem 1.2rem 1.3rem; }
 
+.card-eyebrow {
+  display: block;
+  color: var(--pine);
+  font-size: 0.72rem;
+  font-weight: 700;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  margin-bottom: 0.45rem;
+}
+
 .card-tag {
   display: inline-block;
   color: var(--pine);
@@ -416,6 +433,51 @@ a { color: var(--pine); }
   letter-spacing: 0.14em;
   text-transform: uppercase;
   margin-bottom: 0.45rem;
+}
+
+.card-meta {
+  color: var(--muted);
+  font-size: 0.85rem;
+  font-weight: 600;
+  letter-spacing: 0.02em;
+  margin: 0 0 0.35rem;
+}
+
+.save-btn {
+  position: absolute;
+  top: 0.65rem;
+  right: 0.65rem;
+  z-index: 2;
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  border: 1px solid rgba(255, 255, 255, 0.65);
+  background: rgba(14, 33, 23, 0.42);
+  color: #fff;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  backdrop-filter: blur(4px);
+  transition: background 0.18s ease, transform 0.18s ease;
+}
+
+.save-btn:hover { transform: scale(1.08); }
+
+.save-btn svg path {
+  fill: none;
+  stroke: currentColor;
+}
+
+.save-btn.saved {
+  background: var(--brass);
+  border-color: var(--brass);
+  color: #fff;
+}
+
+.save-btn.saved svg path {
+  fill: currentColor;
+  stroke: currentColor;
 }
 
 .card h2 {
@@ -722,22 +784,38 @@ ol.steps li:last-child::after { display: none; }
 
 /* ---------- Read aloud ---------- */
 
-.read-aloud { margin: 0 0 1.9rem; }
-
-.read-aloud .btn {
+#listen-btn {
   border: 1px solid var(--brass);
   cursor: pointer;
   font-family: var(--sans);
   font-size: 0.92rem;
 }
 
-.read-aloud .btn::before {
+#listen-btn::before {
   content: "\25B6\2002";
   font-size: 0.8em;
 }
 
-.read-aloud .btn[aria-pressed="true"]::before {
+#listen-btn[aria-pressed="true"]::before {
   content: "\25A0\2002";
+}
+
+/* ---------- Share toast ---------- */
+
+.share-toast {
+  position: fixed;
+  left: 50%;
+  bottom: 1.5rem;
+  transform: translateX(-50%);
+  background: var(--pine-deep);
+  color: var(--cream);
+  padding: 0.7rem 1.25rem;
+  border-radius: 999px;
+  font-size: 0.9rem;
+  z-index: 60;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.25);
+  max-width: calc(100vw - 2.5rem);
+  text-align: center;
 }
 
 /* ---------- Footer ---------- */
@@ -966,4 +1044,141 @@ ol.steps li.done .step-text {
 
 @media (max-width: 640px) {
   .edit-grid { grid-template-columns: 1fr; }
+}
+
+/* ---------- Premium UX round: sticky header, cook mode, save, skeletons ---------- */
+
+.recipe-sticky {
+  position: sticky;
+  top: 0;
+  z-index: 40;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  background: rgba(18, 42, 30, 0.96);
+  color: var(--cream);
+  padding: 0.65rem 1.1rem;
+  border-radius: 0 0 12px 12px;
+  transform: translateY(-130%);
+  transition: transform 0.25s ease;
+  margin: 0 -1px;
+}
+
+.recipe-sticky.visible { transform: none; }
+
+.rs-title {
+  font-family: var(--serif);
+  font-weight: 500;
+  font-size: 1rem;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.rs-links { display: flex; gap: 1rem; flex-shrink: 0; }
+
+.rs-links a {
+  color: var(--cream);
+  font-size: 0.82rem;
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  text-decoration: none;
+}
+
+.rs-links a:hover { text-decoration: underline; }
+
+body.cook-mode ol.steps .step-text { font-size: 1.18em; line-height: 1.65; }
+
+body.cook-mode ul.ingredients li span { font-size: 1.08em; }
+
+#cookmode-btn[aria-pressed="true"] {
+  background: var(--pine);
+  border-color: var(--pine);
+  color: #fff;
+}
+
+ul.ingredients li.ing-group {
+  cursor: default;
+  padding-left: 0;
+  margin-top: 1rem;
+}
+
+ul.ingredients li.ing-group::before,
+ul.ingredients li.ing-group::after { display: none; }
+
+ul.ingredients li.ing-group span {
+  font-weight: 700;
+  font-size: 0.85rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--pine);
+  text-decoration: none;
+}
+
+.cook-notes ul {
+  margin: 0.4rem 0 0.2rem 1.1rem;
+  padding: 0;
+}
+
+.cook-notes li { margin-bottom: 0.45rem; }
+
+.cook-notes li::marker { color: var(--brass-deep); }
+
+.step-progress {
+  color: var(--muted);
+  font-size: 0.88rem;
+  font-weight: 600;
+  margin: 0.1rem 0 0.9rem;
+}
+
+#steps-anchor { scroll-margin-top: 96px; }
+
+.related { margin-top: 3.5rem; }
+
+.related h2 {
+  font-family: var(--serif);
+  font-weight: 500;
+  font-size: 1.6rem;
+  margin: 0 0 1.2rem;
+}
+
+.related .grid { padding-bottom: 1rem; }
+
+.result-count {
+  text-align: center;
+  color: var(--muted);
+  font-size: 0.88rem;
+  margin: 0.9rem 0 0;
+}
+
+.card.skel { pointer-events: none; }
+
+.skel-media {
+  display: block;
+  aspect-ratio: 4 / 3;
+  background: linear-gradient(100deg, var(--tag-bg) 40%, #e9e2d2 50%, var(--tag-bg) 60%);
+  background-size: 200% 100%;
+  animation: skel-shimmer 1.4s ease infinite;
+}
+
+.skel-line {
+  display: block;
+  height: 0.95rem;
+  border-radius: 6px;
+  margin-bottom: 0.6rem;
+  background: linear-gradient(100deg, var(--tag-bg) 40%, #e9e2d2 50%, var(--tag-bg) 60%);
+  background-size: 200% 100%;
+  animation: skel-shimmer 1.4s ease infinite;
+}
+
+.skel-line.short { width: 55%; }
+
+@keyframes skel-shimmer {
+  to { background-position: -200% 0; }
+}
+
+@media print {
+  .recipe-sticky { display: none !important; }
 }
