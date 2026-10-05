@@ -594,9 +594,9 @@ function renderEditMode(recipe, rerender) {
 
   root.innerHTML =
     '<div class="note-box"><h3>Suggest a correction</h3>' +
-    "<p>Fix whatever is off below, add your name, and hit <strong>Send suggestion</strong>. " +
-    "It opens a short form with your edits filled in, you press submit there, and Joe or Jim will update the site. " +
-    "Nothing on the page changes until they review it.</p></div>" +
+    "<p>Fix what's off below, add your name, and hit <strong>Send suggestion</strong>. " +
+    "It opens a short form with your edits filled in; submit there and we'll update the site. " +
+    "Nothing changes until we've reviewed it.</p></div>" +
     '<div class="edit-form">' +
     editField("Your name", "edit-name", "", { hint: "so we know who to thank" }) +
     editField("Recipe title", "edit-title", recipe.title || "") +
