@@ -1278,32 +1278,61 @@ ul.ingredients li.ing-group span {
 
 .coll-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+  grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
   gap: 1.1rem;
 }
 
 .coll-card {
-  display: block;
-  background: var(--pine);
-  color: var(--cream);
-  border-radius: var(--radius);
-  padding: 1.4rem 1.3rem;
-  text-decoration: none;
+  display: flex;
+  align-items: center;
+  gap: 1.1rem;
+  background: var(--card);
+  border: 1px solid var(--line);
   border-top: 3px solid var(--brass);
-  box-shadow: 0 3px 14px rgba(29, 58, 42, 0.1);
-  transition: transform 0.18s ease;
+  border-radius: var(--radius);
+  padding: 1.15rem 1.25rem;
+  text-decoration: none;
+  box-shadow: 0 3px 14px rgba(29, 58, 42, 0.07);
+  transition: transform 0.18s ease, box-shadow 0.18s ease;
 }
 
-.coll-card:hover { transform: translateY(-3px); color: #fff; }
+.coll-card:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 12px 28px rgba(29, 58, 42, 0.13);
+}
 
-.coll-card h3 {
+.coll-icon {
+  flex-shrink: 0;
+  width: 58px;
+  height: 58px;
+  border-radius: 50%;
+  background: var(--pine);
+  color: var(--brass);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.coll-icon svg { width: 30px; height: 30px; }
+
+.coll-text { flex: 1; min-width: 0; }
+
+.coll-text h3 {
   font-family: var(--serif);
   font-weight: 500;
-  font-size: 1.25rem;
-  margin: 0 0 0.25rem;
+  font-size: 1.3rem;
+  margin: 0 0 0.15rem;
+  color: var(--ink);
 }
 
-.coll-card p { margin: 0; font-size: 0.85rem; color: #b9c2ae; }
+.coll-text p { margin: 0; font-size: 0.86rem; color: var(--muted); }
+
+.coll-arrow {
+  flex-shrink: 0;
+  color: var(--brass-deep);
+  font-size: 1.3rem;
+  font-weight: 600;
+}
 
 /* Contribute band */
 .contribute-band {
@@ -1476,9 +1505,17 @@ ul.ingredients li.ing-group span {
     min-height: 44px;
   }
 
-  .coll-grid { grid-template-columns: 1fr 1fr; gap: 0.8rem; }
-  .coll-card { padding: 1.1rem 1rem; }
-  .coll-card h3 { font-size: 1.05rem; }
+  .coll-grid { grid-template-columns: 1fr; gap: 0.8rem; }
+  .coll-icon { width: 52px; height: 52px; }
+  .coll-icon svg { width: 27px; height: 27px; }
+
+  .section-head {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0.25rem;
+    margin: 2rem 0 1.1rem;
+  }
+  .section-head h2 { font-size: 1.65rem; }
 }
 
 @media print {

@@ -304,6 +304,16 @@ function initPreview(recipes) {
   wireImageFallback(grid);
 }
 
+const COLL_ICONS = {
+  "Desserts":
+    '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 21h14"/><path d="M7 21v-6.5L12 9l5 5.5V21"/><path d="M12 9V6"/><path d="M10.5 4.5a1.5 1.5 0 1 0 3 0a1.5 1.5 0 0 0-3 0"/></svg>',
+  "Mains":
+    '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 19h18"/><path d="M5 19a7 7 0 0 1 14 0"/><path d="M12 12v-1.5"/><circle cx="12" cy="9" r="1"/></svg>',
+};
+
+const COLL_ICON_DEFAULT =
+  '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="8.5"/><circle cx="12" cy="12" r="4"/></svg>';
+
 function initCollections(recipes) {
   const wrap = document.getElementById("coll-grid");
   if (!wrap) return;
@@ -314,9 +324,12 @@ function initCollections(recipes) {
   wrap.innerHTML = cats
     .map((c) => {
       const n = recipes.filter((r) => r.category === c).length;
+      const icon = COLL_ICONS[c] || COLL_ICON_DEFAULT;
       return (
         `<a class="coll-card" href="recipes.html?cat=${encodeURIComponent(c)}">` +
-        `<h3>${esc(c)}</h3><p>${n} recipe${n === 1 ? "" : "s"}</p></a>`
+        `<span class="coll-icon">${icon}</span>` +
+        `<span class="coll-text"><h3>${esc(c)}</h3><p>${n} recipe${n === 1 ? "" : "s"}</p></span>` +
+        `<span class="coll-arrow" aria-hidden="true">&rarr;</span></a>`
       );
     })
     .join("");
