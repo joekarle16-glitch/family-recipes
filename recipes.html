@@ -20,7 +20,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,500;9..144,600&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="styles.css?v=7">
+  <link rel="stylesheet" href="styles.css?v=8">
 </head>
 <body>
   <header class="site-header">
@@ -43,10 +43,11 @@
     <section class="controls">
       <input id="search" type="search" placeholder="Search recipes, cooks, or ingredients" aria-label="Search recipes">
       <div id="categories" class="chips" aria-label="Filter by category"></div>
+      <p id="result-count" class="result-count" aria-live="polite"></p>
     </section>
 
     <section id="grid" class="grid" aria-live="polite"></section>
-    <p id="empty" class="empty" hidden>Nothing by that name yet. Try a different word.</p>
+    <p id="empty" class="empty" hidden>Nothing by that name yet. Try a different word, or <a href="add.html">add it to the collection</a>.</p>
   </main>
 
   <footer class="site-footer">
@@ -55,6 +56,6 @@
     <p><a href="https://docs.google.com/forms/d/e/1FAIpQLSdMkBRr1ul1rF6vRf6hXzCZIHddtsfy7_9gn89YjlPJ9ZGVbg/viewform" target="_blank" rel="noopener">Share feedback or a correction</a></p>
   </footer>
 
-  <script src="app.js?v=7"></script>
+  <script src="app.js?v=8"></script>
 </body>
 </html>
