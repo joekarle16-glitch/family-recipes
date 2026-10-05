@@ -9,6 +9,9 @@ async function init() {
   if (document.getElementById("preview-grid")) {
     initPreview(recipes);
   }
+  if (document.getElementById("coll-grid")) {
+    initCollections(recipes);
+  }
   const detail = document.getElementById("recipe-detail");
   if (detail) {
     renderDetail(recipes, detail);
@@ -131,6 +134,24 @@ function fmtDate(iso) {
   return months[parseInt(m[2], 10) - 1] + " " + parseInt(m[3], 10) + ", " + m[1];
 }
 
+function fmtMonth(iso) {
+  const m = /^(\d{4})-(\d{2})/.exec(iso || "");
+  if (!m) return "";
+  const months = ["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"];
+  return months[parseInt(m[2], 10) - 1] + " " + m[1];
+}
+
+function provenanceText(r) {
+  const when = r.added ? fmtMonth(r.added) : "";
+  const dated = when ? "added " + when : "";
+  if (r.source === "memory") {
+    const from = r.attribution ? "From " + r.attribution + ", shared from memory" : "Shared from memory";
+    return [from, dated].filter(Boolean).join(" · ");
+  }
+  const box = r.attribution ? "From " + r.attribution + "’s recipe box" : "";
+  return [box, dated].filter(Boolean).join(" · ");
+}
+
 function initStats(recipes) {
   const statRecipes = document.getElementById("stat-recipes");
   if (statRecipes) statRecipes.textContent = recipes.length;
@@ -211,6 +232,27 @@ document.addEventListener("click", (e) => {
   showToast(nowSaved ? "Saved to your box." : "Removed from your box.");
 });
 
+document.addEventListener("click", (e) => {
+  const cook = e.target.closest(".cookmode-btn");
+  if (cook) {
+    e.preventDefault();
+    setCookMode(!document.body.classList.contains("cook-mode"));
+    return;
+  }
+  const surprise = e.target.closest("[data-surprise]");
+  if (surprise) {
+    e.preventDefault();
+    goSurprise();
+  }
+});
+
+async function goSurprise() {
+  const recipes = await loadRecipes();
+  if (!recipes.length) return;
+  const pick = recipes[Math.floor(Math.random() * recipes.length)];
+  window.location.href = "recipe.html?id=" + encodeURIComponent(pick.id);
+}
+
 function heartSvg() {
   return (
     '<svg viewBox="0 0 24 24" width="18" height="18" aria-hidden="true">' +
@@ -219,11 +261,12 @@ function heartSvg() {
   );
 }
 
-function cardHtml(r) {
+function cardHtml(r, num) {
   const saved = isSaved(r.id);
   const meta = cardMeta(r);
   return (
     `<article class="card">` +
+    (num ? `<span class="card-num">No. ${num}</span>` : "") +
     `<button type="button" class="save-btn${saved ? " saved" : ""}" data-save="${esc(r.id)}" aria-pressed="${saved}" aria-label="Save ${esc(r.title)} to your box">${heartSvg()}</button>` +
     `<a class="card-link" href="recipe.html?id=${encodeURIComponent(r.id)}">` +
     `<span class="card-media">` +
@@ -255,8 +298,38 @@ function initPreview(recipes) {
   const grid = document.getElementById("preview-grid");
   grid.innerHTML = skeletonCards(3);
   const latest = recipes.slice(-3).reverse();
-  grid.innerHTML = latest.map(cardHtml).join("");
+  grid.innerHTML = latest
+    .map((r) => cardHtml(r, recipes.indexOf(r) + 1))
+    .join("");
   wireImageFallback(grid);
+}
+
+function initCollections(recipes) {
+  const wrap = document.getElementById("coll-grid");
+  if (!wrap) return;
+  const cats = [];
+  recipes.forEach((r) => {
+    if (r.category && !cats.includes(r.category)) cats.push(r.category);
+  });
+  wrap.innerHTML = cats
+    .map((c) => {
+      const n = recipes.filter((r) => r.category === c).length;
+      return (
+        `<a class="coll-card" href="recipes.html?cat=${encodeURIComponent(c)}">` +
+        `<h3>${esc(c)}</h3><p>${n} recipe${n === 1 ? "" : "s"}</p></a>`
+      );
+    })
+    .join("");
+}
+
+function contributeCard() {
+  return (
+    `<article class="card contribute-card"><a href="add.html">` +
+    `<span class="plus" aria-hidden="true">+</span>` +
+    `<h2>Add a family recipe</h2>` +
+    `<p>Have a card, a memory, or a fix? It takes a minute.</p>` +
+    `</a></article>`
+  );
 }
 
 function skeletonCards(n) {
@@ -276,17 +349,30 @@ function initGrid(recipes) {
   grid.innerHTML = skeletonCards(6);
 
   const categories = ["All", "Saved"];
+  const counts = {};
   recipes.forEach((r) => {
-    if (r.category && !categories.includes(r.category)) categories.push(r.category);
+    if (r.category) {
+      if (!categories.includes(r.category)) categories.push(r.category);
+      counts[r.category] = (counts[r.category] || 0) + 1;
+    }
   });
 
   let activeCategory = "All";
   let query = "";
 
+  const catParam = new URLSearchParams(window.location.search).get("cat");
+  if (catParam && categories.includes(catParam)) activeCategory = catParam;
+
+  function chipLabel(c) {
+    if (c === "All") return `All (${recipes.length})`;
+    if (c === "Saved") return "Saved";
+    return `${c} (${counts[c] || 0})`;
+  }
+
   chipsWrap.innerHTML = categories
     .map(
       (c) =>
-        `<button class="chip${c === "All" ? " active" : ""}" data-cat="${esc(c)}">${esc(c)}</button>`
+        `<button class="chip${c === activeCategory ? " active" : ""}" data-cat="${esc(c)}">${esc(chipLabel(c))}</button>`
     )
     .join("");
 
@@ -330,7 +416,9 @@ function initGrid(recipes) {
 
   function draw() {
     const list = recipes.filter(matches);
-    grid.innerHTML = list.map(cardHtml).join("");
+    grid.innerHTML =
+      list.map((r) => cardHtml(r, recipes.indexOf(r) + 1)).join("") +
+      (activeCategory === "Saved" || query ? "" : contributeCard());
     empty.hidden = list.length > 0;
     if (!list.length) {
       if (activeCategory === "Saved" && !query) {
@@ -348,7 +436,7 @@ function initGrid(recipes) {
       count.textContent =
         query || activeCategory !== "All"
           ? `Showing ${list.length} of ${recipes.length} recipes`
-          : `${recipes.length} recipe${recipes.length === 1 ? "" : "s"}`;
+          : `${recipes.length} family recipe${recipes.length === 1 ? "" : "s"}`;
     }
     wireImageFallback(grid);
   }
@@ -365,33 +453,43 @@ function ingredientItem(i) {
 
 function relatedHtml(recipes, current) {
   const others = recipes.filter((r) => r.id !== current.id);
-  const sameCat = others.filter(
-    (r) => r.category && r.category === current.category
-  );
-  const rest = others.filter((r) => sameCat.indexOf(r) === -1);
-  const picks = sameCat.concat(rest).slice(0, 3);
+  const picks = others
+    .slice()
+    .sort(() => Math.random() - 0.5)
+    .slice(0, 3);
   if (!picks.length) return "";
   return (
     `<section class="related" aria-label="More recipes">` +
-    `<h2>More from the box</h2>` +
-    `<div class="grid">${picks.map(cardHtml).join("")}</div></section>`
+    `<h2>More from the Karle kitchen</h2>` +
+    `<div class="grid">${picks
+      .map((r) => cardHtml(r, recipes.indexOf(r) + 1))
+      .join("")}</div></section>`
   );
 }
 
 var wakeLock = null;
 var wakeLockListenerAdded = false;
 
+function refreshCookButtons() {
+  const on = document.body.classList.contains("cook-mode");
+  document.querySelectorAll(".cookmode-btn").forEach((b) => {
+    b.textContent = on ? "Cook mode: on" : "Start cook mode";
+    b.setAttribute("aria-pressed", String(on));
+  });
+}
+
 function setCookMode(on) {
-  const btn = document.getElementById("cookmode-btn");
-  if (!btn || !("wakeLock" in navigator)) return;
+  if (!("wakeLock" in navigator)) {
+    showToast("Cook mode isn't available right now.");
+    return;
+  }
   if (on) {
     navigator.wakeLock
       .request("screen")
       .then((lock) => {
         wakeLock = lock;
         document.body.classList.add("cook-mode");
-        btn.textContent = "Cook mode: on";
-        btn.setAttribute("aria-pressed", "true");
+        refreshCookButtons();
         lock.addEventListener("release", () => {
           wakeLock = null;
         });
@@ -403,8 +501,7 @@ function setCookMode(on) {
       wakeLock = null;
     }
     document.body.classList.remove("cook-mode");
-    btn.textContent = "Cook mode: keep screen on";
-    btn.setAttribute("aria-pressed", "false");
+    refreshCookButtons();
   }
   if (!wakeLockListenerAdded) {
     wakeLockListenerAdded = true;
@@ -457,20 +554,42 @@ function renderDetail(recipes, root) {
     .map((n) => `<li>${esc(n)}</li>`)
     .join("");
 
-  const cookBtn =
-    "wakeLock" in navigator
-      ? ` <button type="button" class="btn outline" id="cookmode-btn" aria-pressed="false">Cook mode: keep screen on</button>`
+  const crumbs =
+    `<p class="crumbs"><a href="recipes.html">Recipes</a>` +
+    (recipe.category
+      ? ` <span aria-hidden="true">/</span> <a href="recipes.html?cat=${encodeURIComponent(
+          recipe.category
+        )}">${esc(recipe.category)}</a>`
+      : "") +
+    ` <span aria-hidden="true">/</span> ${esc(recipe.title)}</p>`;
+
+  const whyBox =
+    recipe.whyItWorks && recipe.whyItWorks.length
+      ? `<div class="why-box"><h3>Why it works</h3><ul>${recipe.whyItWorks
+          .map((w) => `<li>${esc(w)}</li>`)
+          .join("")}</ul></div>`
       : "";
 
   root.innerHTML =
     exampleBanner +
-    `<div class="recipe-sticky" id="recipe-sticky"><span class="rs-title">${esc(recipe.title)}</span><span class="rs-links"><a href="#recipe-body">Ingredients</a><a href="#steps-anchor">Steps</a></span></div>` +
+    `<div class="recipe-sticky" id="recipe-sticky"><span class="rs-title">${esc(
+      recipe.title
+    )}</span><span class="rs-links"><a href="#recipe-body">Ingredients</a><a href="#steps-anchor">Steps</a><button type="button" class="cookmode-btn rs-cook" aria-pressed="false">Start cook mode</button></span></div>` +
+    `<div class="cookbar"><span class="cb-title">${esc(
+      recipe.title
+    )}</span><button type="button" class="btn cookmode-btn" aria-pressed="false">Start cook mode</button></div>` +
+    crumbs +
     `<div class="recipe-head">` +
-    (recipe.category ? `<span class="card-tag">${esc(recipe.category)}</span>` : "") +
+    (recipe.category
+      ? `<span class="card-tag">${esc(recipe.category)}</span>`
+      : "") +
     `<h1>${esc(recipe.title)}</h1>` +
-    (recipe.attribution ? `<p class="byline">From ${esc(recipe.attribution)}</p>` : "") +
-    (recipe.description ? `<p class="desc lede">${esc(recipe.description)}</p>` : "") +
-    `<p class="jump-row"><a class="btn" href="#recipe-body">Jump to recipe</a> <button type="button" class="btn outline" id="listen-btn" aria-pressed="false">Listen to this recipe</button> <button type="button" class="btn outline" id="share-btn">Share</button>${cookBtn} <button type="button" class="btn outline" id="suggest-fix-btn">Suggest a correction</button></p>` +
+    `<p class="provenance">${esc(provenanceText(recipe))}</p>` +
+    (recipe.description
+      ? `<p class="desc lede">${esc(recipe.description)}</p>`
+      : "") +
+    whyBox +
+    `<p class="action-links"><button type="button" class="linklike" id="listen-btn" aria-pressed="false">Listen to this recipe</button><button type="button" class="linklike" id="share-btn">Share</button><button type="button" class="linklike" id="suggest-fix-btn">Suggest a correction</button><a href="#recipe-body">Jump to recipe</a></p>` +
     `</div>` +
     `<img class="recipe-photo" src="${esc(photoFor(recipe))}" alt="${esc(recipe.title)}">` +
     `<div class="meta-row">` +
@@ -525,17 +644,6 @@ function renderDetail(recipes, root) {
 
   const shareBtn = document.getElementById("share-btn");
   if (shareBtn) shareBtn.addEventListener("click", () => shareRecipe(recipe));
-
-  const cookBtnEl = document.getElementById("cookmode-btn");
-  if (cookBtnEl) {
-    if (document.body.classList.contains("cook-mode")) {
-      cookBtnEl.textContent = "Cook mode: on";
-      cookBtnEl.setAttribute("aria-pressed", "true");
-    }
-    cookBtnEl.addEventListener("click", () =>
-      setCookMode(!document.body.classList.contains("cook-mode"))
-    );
-  }
 
   const sticky = document.getElementById("recipe-sticky");
   const head = root.querySelector(".recipe-head");
