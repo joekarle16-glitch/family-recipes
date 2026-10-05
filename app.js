@@ -132,19 +132,99 @@ function initStats(recipes) {
   }
 }
 
-function cardHtml(r) {
+function parseMinutes(s) {
+  if (!s) return 0;
+  let m = 0;
+  const h = /(\d+)\s*hour/i.exec(s);
+  if (h) m += parseInt(h[1], 10) * 60;
+  const mi = /(\d+)\s*min/i.exec(s);
+  if (mi) m += parseInt(mi[1], 10);
+  return m;
+}
+
+function fmtMinutes(m) {
+  if (!m) return "";
+  if (m < 60) return m + " min";
+  const h = Math.floor(m / 60);
+  const rest = m % 60;
+  return rest ? h + " hr " + rest + " min" : h + " hr";
+}
+
+function cardMeta(r) {
+  const total = fmtMinutes(parseMinutes(r.prepTime) + parseMinutes(r.cookTime));
+  const parts = [];
+  if (total) parts.push(total);
+  if (r.servings) parts.push("Serves " + r.servings);
+  return parts.join(" · ");
+}
+
+var SAVE_KEY = "kk-saved-box";
+
+function getSaved() {
+  try {
+    const v = JSON.parse(localStorage.getItem(SAVE_KEY) || "[]");
+    return Array.isArray(v) ? v : [];
+  } catch (e) {
+    return [];
+  }
+}
+
+function isSaved(id) {
+  return getSaved().indexOf(id) !== -1;
+}
+
+function toggleSave(id) {
+  let saved = getSaved();
+  const nowSaved = saved.indexOf(id) === -1;
+  saved = nowSaved ? saved.concat([id]) : saved.filter((x) => x !== id);
+  try {
+    localStorage.setItem(SAVE_KEY, JSON.stringify(saved));
+  } catch (e) {}
+  document
+    .querySelectorAll('[data-save="' + id + '"]')
+    .forEach((b) => {
+      b.classList.toggle("saved", nowSaved);
+      b.setAttribute("aria-pressed", String(nowSaved));
+    });
+  window.dispatchEvent(new CustomEvent("kk-saved-changed"));
+  return nowSaved;
+}
+
+document.addEventListener("click", (e) => {
+  const btn = e.target.closest("[data-save]");
+  if (!btn) return;
+  e.preventDefault();
+  e.stopPropagation();
+  const nowSaved = toggleSave(btn.getAttribute("data-save"));
+  showToast(nowSaved ? "Saved to your box." : "Removed from your box.");
+});
+
+function heartSvg() {
   return (
-    `<a class="card" href="recipe.html?id=${encodeURIComponent(r.id)}">` +
+    '<svg viewBox="0 0 24 24" width="18" height="18" aria-hidden="true">' +
+    '<path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z" ' +
+    'fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/></svg>'
+  );
+}
+
+function cardHtml(r) {
+  const saved = isSaved(r.id);
+  const meta = cardMeta(r);
+  return (
+    `<article class="card">` +
+    `<button type="button" class="save-btn${saved ? " saved" : ""}" data-save="${esc(r.id)}" aria-pressed="${saved}" aria-label="Save ${esc(r.title)} to your box">${heartSvg()}</button>` +
+    `<a class="card-link" href="recipe.html?id=${encodeURIComponent(r.id)}">` +
     `<span class="card-media">` +
     `<img src="${esc(photoFor(r))}" alt="${esc(r.title)}" loading="lazy">` +
     `<span class="view"><span>View recipe</span><span aria-hidden="true">&rarr;</span></span>` +
     `</span>` +
     `<div class="card-body">` +
-    (r.category ? `<span class="card-tag">${esc(r.category)}</span>` : "") +
+    (r.category ? `<span class="card-eyebrow">${esc(r.category)}</span>` : "") +
     `<h2>${esc(r.title)}</h2>` +
+    (meta ? `<p class="card-meta">${esc(meta)}</p>` : "") +
     (r.attribution ? `<p class="byline">From ${esc(r.attribution)}</p>` : "") +
     exampleBadge(r) +
-    `</div></a>`
+    `</div></a></article>`
   );
 }
 
@@ -161,9 +241,17 @@ function wireImageFallback(scope) {
 
 function initPreview(recipes) {
   const grid = document.getElementById("preview-grid");
+  grid.innerHTML = skeletonCards(3);
   const latest = recipes.slice(-3).reverse();
   grid.innerHTML = latest.map(cardHtml).join("");
   wireImageFallback(grid);
+}
+
+function skeletonCards(n) {
+  return Array.from({ length: n }, () =>
+    `<div class="card skel" aria-hidden="true"><span class="skel-media"></span>` +
+    `<div class="card-body"><span class="skel-line"></span><span class="skel-line short"></span></div></div>`
+  ).join("");
 }
 
 function initGrid(recipes) {
@@ -171,8 +259,11 @@ function initGrid(recipes) {
   const empty = document.getElementById("empty");
   const search = document.getElementById("search");
   const chipsWrap = document.getElementById("categories");
+  const count = document.getElementById("result-count");
 
-  const categories = ["All"];
+  grid.innerHTML = skeletonCards(6);
+
+  const categories = ["All", "Saved"];
   recipes.forEach((r) => {
     if (r.category && !categories.includes(r.category)) categories.push(r.category);
   });
@@ -203,9 +294,16 @@ function initGrid(recipes) {
     draw();
   });
 
+  window.addEventListener("kk-saved-changed", () => {
+    if (activeCategory === "Saved") draw();
+  });
+
   function matches(r) {
-    const inCategory = activeCategory === "All" || r.category === activeCategory;
-    if (!inCategory) return false;
+    if (activeCategory === "Saved") {
+      if (!isSaved(r.id)) return false;
+    } else if (activeCategory !== "All" && r.category !== activeCategory) {
+      return false;
+    }
     if (!query) return true;
     const hay = [
       r.title,
@@ -222,10 +320,101 @@ function initGrid(recipes) {
     const list = recipes.filter(matches);
     grid.innerHTML = list.map(cardHtml).join("");
     empty.hidden = list.length > 0;
+    if (!list.length) {
+      if (activeCategory === "Saved" && !query) {
+        empty.innerHTML =
+          "Your box is empty. Tap the heart on any recipe to save it here.";
+      } else if (query) {
+        empty.innerHTML =
+          `Nothing called &ldquo;${esc(search.value.trim())}&rdquo; yet. ` +
+          `<a href="add.html">Add it to the collection</a>.`;
+      } else {
+        empty.innerHTML = "Nothing here yet.";
+      }
+    }
+    if (count) {
+      count.textContent =
+        query || activeCategory !== "All"
+          ? `Showing ${list.length} of ${recipes.length} recipes`
+          : `${recipes.length} recipe${recipes.length === 1 ? "" : "s"}`;
+    }
     wireImageFallback(grid);
   }
 
   draw();
+}
+
+function ingredientItem(i) {
+  if (typeof i === "string" && i.indexOf("# ") === 0) {
+    return `<li class="ing-group"><span>${esc(i.slice(2))}</span></li>`;
+  }
+  return `<li><span>${esc(i)}</span></li>`;
+}
+
+function relatedHtml(recipes, current) {
+  const others = recipes.filter((r) => r.id !== current.id);
+  const sameCat = others.filter(
+    (r) => r.category && r.category === current.category
+  );
+  const rest = others.filter((r) => sameCat.indexOf(r) === -1);
+  const picks = sameCat.concat(rest).slice(0, 3);
+  if (!picks.length) return "";
+  return (
+    `<section class="related" aria-label="More recipes">` +
+    `<h2>More from the box</h2>` +
+    `<div class="grid">${picks.map(cardHtml).join("")}</div></section>`
+  );
+}
+
+var wakeLock = null;
+var wakeLockListenerAdded = false;
+
+function setCookMode(on) {
+  const btn = document.getElementById("cookmode-btn");
+  if (!btn || !("wakeLock" in navigator)) return;
+  if (on) {
+    navigator.wakeLock
+      .request("screen")
+      .then((lock) => {
+        wakeLock = lock;
+        document.body.classList.add("cook-mode");
+        btn.textContent = "Cook mode: on";
+        btn.setAttribute("aria-pressed", "true");
+        lock.addEventListener("release", () => {
+          wakeLock = null;
+        });
+      })
+      .catch(() => showToast("Cook mode isn't available right now."));
+  } else {
+    if (wakeLock) {
+      wakeLock.release().catch(() => {});
+      wakeLock = null;
+    }
+    document.body.classList.remove("cook-mode");
+    btn.textContent = "Cook mode: keep screen on";
+    btn.setAttribute("aria-pressed", "false");
+  }
+  if (!wakeLockListenerAdded) {
+    wakeLockListenerAdded = true;
+    document.addEventListener("visibilitychange", () => {
+      if (
+        document.visibilityState === "visible" &&
+        document.body.classList.contains("cook-mode") &&
+        !wakeLock &&
+        "wakeLock" in navigator
+      ) {
+        navigator.wakeLock
+          .request("screen")
+          .then((lock) => {
+            wakeLock = lock;
+            lock.addEventListener("release", () => {
+              wakeLock = null;
+            });
+          })
+          .catch(() => {});
+      }
+    });
+  }
 }
 
 function renderDetail(recipes, root) {
@@ -236,7 +425,7 @@ function renderDetail(recipes, root) {
   if (!recipe) {
     root.innerHTML =
       "<div class='recipe-head'><h1>Recipe not found</h1>" +
-      "<p class='byline'>That recipe is not on the site yet. " +
+      "<p class='byline'>That recipe isn't here yet. " +
       "<a href='recipes.html'>Back to all recipes</a>.</p></div>";
     return;
   }
@@ -252,16 +441,25 @@ function renderDetail(recipes, root) {
       `<p>This recipe shows the format every entry follows. It will be replaced with a real family recipe soon.</p></div>`
     : "";
 
+  const cookNotes = (recipe.notes || [])
+    .map((n) => `<li>${esc(n)}</li>`)
+    .join("");
+
+  const cookBtn =
+    "wakeLock" in navigator
+      ? ` <button type="button" class="btn outline" id="cookmode-btn" aria-pressed="false">Cook mode: keep screen on</button>`
+      : "";
+
   root.innerHTML =
     exampleBanner +
+    `<div class="recipe-sticky" id="recipe-sticky"><span class="rs-title">${esc(recipe.title)}</span><span class="rs-links"><a href="#recipe-body">Ingredients</a><a href="#steps-anchor">Steps</a></span></div>` +
     `<div class="recipe-head">` +
     (recipe.category ? `<span class="card-tag">${esc(recipe.category)}</span>` : "") +
     `<h1>${esc(recipe.title)}</h1>` +
     (recipe.attribution ? `<p class="byline">From ${esc(recipe.attribution)}</p>` : "") +
     (recipe.description ? `<p class="desc lede">${esc(recipe.description)}</p>` : "") +
-    `<p class="jump-row"><a class="btn" href="#recipe-body">Jump to recipe</a> <button type="button" class="btn outline" id="suggest-fix-btn">Suggest a correction</button></p>` +
+    `<p class="jump-row"><a class="btn" href="#recipe-body">Jump to recipe</a> <button type="button" class="btn outline" id="listen-btn" aria-pressed="false">Listen to this recipe</button> <button type="button" class="btn outline" id="share-btn">Share</button>${cookBtn} <button type="button" class="btn outline" id="suggest-fix-btn">Suggest a correction</button></p>` +
     `</div>` +
-    `<div class="read-aloud"><button type="button" class="btn" id="listen-btn" aria-pressed="false">Listen to this recipe</button></div>` +
     `<img class="recipe-photo" src="${esc(photoFor(recipe))}" alt="${esc(recipe.title)}">` +
     `<div class="meta-row">` +
     (recipe.servings ? `<div><span>Servings</span><strong>${esc(recipe.servings)}</strong></div>` : "") +
@@ -271,19 +469,37 @@ function renderDetail(recipes, root) {
     (notes ? `<div class="note-box"><h3>A note on the original card</h3>${notes}</div>` : "") +
     `<div class="two-col" id="recipe-body">` +
     `<div><h2>Ingredients</h2><p class="cook-hint">Tap an ingredient to check it off as you go.</p><ul class="ingredients">${(recipe.ingredients || [])
-      .map((i) => `<li><span>${esc(i)}</span></li>`)
+      .map(ingredientItem)
       .join("")}</ul></div>` +
-    `<div><h2>Steps</h2><p class="cook-hint">Tap a step to mark it done.</p><ol class="steps">${(recipe.steps || [])
+    `<div id="steps-anchor"><h2>Steps</h2><p class="step-progress" id="step-progress"></p><p class="cook-hint">Tap a step to mark it done.</p><ol class="steps">${(recipe.steps || [])
       .map((s) => `<li><span class="step-text">${esc(s)}</span></li>`)
       .join("")}</ol></div>` +
     `</div>` +
-    (recipe.sourceNote ? `<p class="source-note">${esc(recipe.sourceNote)}</p>` : "");
+    (cookNotes ? `<div class="note-box cook-notes"><h3>Good to know</h3><ul>${cookNotes}</ul></div>` : "") +
+    (recipe.sourceNote ? `<p class="source-note">${esc(recipe.sourceNote)}</p>` : "") +
+    relatedHtml(recipes, recipe);
 
   injectRecipeSchema(recipe);
 
-  root.querySelectorAll("ul.ingredients li, ol.steps li").forEach((li) => {
-    li.addEventListener("click", () => li.classList.toggle("done"));
-  });
+  function updateProgress() {
+    const steps = root.querySelectorAll("ol.steps li");
+    const done = root.querySelectorAll("ol.steps li.done").length;
+    const el = document.getElementById("step-progress");
+    if (el)
+      el.textContent = done
+        ? done + " of " + steps.length + " steps done"
+        : steps.length + " steps";
+  }
+
+  root
+    .querySelectorAll("ul.ingredients li:not(.ing-group), ol.steps li")
+    .forEach((li) => {
+      li.addEventListener("click", () => {
+        li.classList.toggle("done");
+        updateProgress();
+      });
+    });
+  updateProgress();
 
   const photo = root.querySelector(".recipe-photo");
   photo.addEventListener("error", () => {
@@ -294,6 +510,34 @@ function renderDetail(recipes, root) {
   });
 
   wireReadAloud(recipe);
+
+  const shareBtn = document.getElementById("share-btn");
+  if (shareBtn) shareBtn.addEventListener("click", () => shareRecipe(recipe));
+
+  const cookBtnEl = document.getElementById("cookmode-btn");
+  if (cookBtnEl) {
+    if (document.body.classList.contains("cook-mode")) {
+      cookBtnEl.textContent = "Cook mode: on";
+      cookBtnEl.setAttribute("aria-pressed", "true");
+    }
+    cookBtnEl.addEventListener("click", () =>
+      setCookMode(!document.body.classList.contains("cook-mode"))
+    );
+  }
+
+  const sticky = document.getElementById("recipe-sticky");
+  const head = root.querySelector(".recipe-head");
+  if (sticky && head && "IntersectionObserver" in window) {
+    new IntersectionObserver((entries) => {
+      const e = entries[0];
+      sticky.classList.toggle(
+        "visible",
+        !e.isIntersecting && e.boundingClientRect.top < 0
+      );
+    }).observe(head);
+  }
+
+  wireImageFallback(root);
 
   wireCorrectionButton(recipe, function () {
     renderDetail(recipes, root);
@@ -364,7 +608,7 @@ function renderEditMode(recipe, rerender) {
     "</div>" +
     editField("Ingredients", "edit-ingredients", (recipe.ingredients || []).join("\n"), {
       textarea: 8,
-      hint: "one per line",
+      hint: "one per line; start a line with # for a section header",
     }) +
     editField("Steps", "edit-steps", (recipe.steps || []).join("\n"), {
       textarea: 10,
@@ -435,6 +679,39 @@ function injectRecipeSchema(recipe) {
   const old = document.getElementById("recipe-schema");
   if (old) old.remove();
   document.head.appendChild(script);
+}
+
+function shareRecipe(recipe) {
+  const url = window.location.href;
+  const title = recipe.title + " | The Karle Family Kitchen";
+  const text =
+    recipe.title +
+    (recipe.attribution ? " from " + recipe.attribution : "") +
+    " (The Karle Family Kitchen) " +
+    url;
+  if (navigator.share) {
+    navigator.share({ title, text, url }).catch(() => {});
+    return;
+  }
+  const fallback = text + " " + url;
+  if (navigator.clipboard && navigator.clipboard.writeText) {
+    navigator.clipboard
+      .writeText(fallback)
+      .then(() => showToast("Link copied. Paste it anywhere."))
+      .catch(() => showToast("Copy this link: " + url));
+  } else {
+    showToast("Copy this link: " + url);
+  }
+}
+
+function showToast(message) {
+  const old = document.querySelector(".share-toast");
+  if (old) old.remove();
+  const toast = document.createElement("div");
+  toast.className = "share-toast";
+  toast.textContent = message;
+  document.body.appendChild(toast);
+  setTimeout(() => toast.remove(), 2600);
 }
 
 function pickReadAloudVoice() {
