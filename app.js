@@ -24,8 +24,8 @@ async function init() {
 }
 
 async function initCollage() {
-  const bg = document.getElementById("collage-bg");
-  if (!bg) return;
+  const bgs = Array.from(document.querySelectorAll(".collage-bg"));
+  if (!bgs.length) return;
   let photos = [];
   try {
     const res = await fetch("family-photos.json", { cache: "no-store" });
@@ -37,36 +37,56 @@ async function initCollage() {
     /* plain hero background until photos arrive */
   }
   if (!photos.length) {
-    bg.style.display = "none";
+    bgs.forEach((bg) => { bg.style.display = "none"; });
     return;
   }
   // Hide the collage if the photo files are not actually reachable yet.
   const probe = new Image();
-  probe.onerror = () => { bg.style.display = "none"; };
+  probe.onerror = () => { bgs.forEach((bg) => { bg.style.display = "none"; }); };
   probe.src = photos[0].src;
-  bg.innerHTML = photos
-    .map(
-      (p, i) =>
-        `<div class="ph${i === 0 ? " active" : ""}" role="img" aria-label="Family photo ${i + 1} of ${photos.length}"` +
-        ` style="background-image:url('${esc(p.src)}')"></div>`
-    )
-    .join("");
-  const frames = Array.from(bg.children);
-  if (frames.length < 2) return;
-  if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
-  let current = 0;
-  let timer = setInterval(next, 6000);
-  function next() {
-    frames[current].classList.remove("active");
-    current = (current + 1) % frames.length;
-    frames[current].classList.add("active");
-  }
-  const hero = bg.closest(".hero-collage");
-  hero.addEventListener("mouseenter", () => clearInterval(timer));
-  hero.addEventListener("mouseleave", () => {
-    clearInterval(timer);
-    timer = setInterval(next, 6000);
+  const reduceMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+  const controllers = [];
+  bgs.forEach((bg, bi) => {
+    // Deal photos across frames so each side cycles its own set.
+    const pool = photos.filter((_, i) => i % bgs.length === bi);
+    const list = pool.length ? pool : photos;
+    bg.innerHTML = list
+      .map(
+        (p, i) =>
+          `<div class="ph${i === 0 ? " active" : ""}"` +
+          ` style="background-image:url('${esc(p.src)}')"></div>`
+      )
+      .join("");
+    const frames = Array.from(bg.children);
+    const ctl = { frames, current: 0, timer: null, delay: null };
+    const tick = () => {
+      frames[ctl.current].classList.remove("active");
+      ctl.current = (ctl.current + 1) % frames.length;
+      frames[ctl.current].classList.add("active");
+    };
+    ctl.start = (waitMs) => {
+      ctl.stop();
+      if (waitMs) ctl.delay = setTimeout(() => { ctl.timer = setInterval(tick, 6000); }, waitMs);
+      else ctl.timer = setInterval(tick, 6000);
+    };
+    ctl.stop = () => {
+      clearInterval(ctl.timer);
+      clearTimeout(ctl.delay);
+      ctl.timer = null;
+      ctl.delay = null;
+    };
+    if (frames.length >= 2 && !reduceMotion) ctl.start(bi === 0 ? 0 : 3000);
+    controllers.push(ctl);
   });
+  const hero = bgs[0].closest(".hero-triptych");
+  if (hero) {
+    hero.addEventListener("mouseenter", () => controllers.forEach((c) => c.stop()));
+    hero.addEventListener("mouseleave", () =>
+      controllers.forEach((c, i) => {
+        if (c.frames.length >= 2 && !reduceMotion) c.start(i === 0 ? 0 : 1500);
+      })
+    );
+  }
 }
 
 async function initGallery(gallery) {
