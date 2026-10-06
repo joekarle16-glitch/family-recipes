@@ -309,6 +309,8 @@ const COLL_ICONS = {
     '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 21h14"/><path d="M7 21v-6.5L12 9l5 5.5V21"/><path d="M12 9V6"/><path d="M10.5 4.5a1.5 1.5 0 1 0 3 0a1.5 1.5 0 0 0-3 0"/></svg>',
   "Mains":
     '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 19h18"/><path d="M5 19a7 7 0 0 1 14 0"/><path d="M12 12v-1.5"/><circle cx="12" cy="9" r="1"/></svg>',
+  "Cocktails":
+    '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 5h16l-8 8z"/><path d="M12 13v6"/><path d="M8.5 19h7"/><path d="M16.5 7.5l1.8-1.8"/></svg>',
 };
 
 const COLL_ICON_DEFAULT =
