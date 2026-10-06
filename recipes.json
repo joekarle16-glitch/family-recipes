@@ -1,1 +1,245 @@
-{"updated": "2026-10-05", "recipes": [{"attribution": "Jim Karle", "category": "Desserts", "cookTime": "55 minutes", "description": "The pie Jim is known for: flaky crust, tart apples, and a crumb topping worth fighting over. This entry shows the format each family recipe will follow.", "example": true, "handwritingNotes": [{"note": "The card reads 'a pinch or two of nutmeg' and the amount is hard to make out. We went with a pinch. If you remember it differently, let us know.", "ref": "Nutmeg quantity"}], "id": "example-jims-apple-pie", "ingredients": ["2 pie crusts (homemade or store-bought)", "6 tart apples, peeled and thinly sliced", "3/4 cup sugar", "2 tablespoons flour", "1 teaspoon cinnamon", "A pinch of nutmeg", "1 tablespoon lemon juice", "2 tablespoons cold butter, cut into small pieces", "1/2 cup flour, for the crumb topping", "1/3 cup brown sugar", "1/4 cup cold butter, for the crumb topping"], "photo": "images/placeholder.svg", "prepTime": "30 minutes", "servings": "8", "sourceNote": "Example entry transcribed from a handwritten recipe card, October 2026. Wording preserved as written.", "steps": ["Heat the oven to 425°F.", "Line a 9-inch pie plate with one crust, letting the edges hang over.", "Toss the apples with the sugar, 2 tablespoons flour, cinnamon, nutmeg, and lemon juice.", "Pile the apples into the crust and dot with the cold butter pieces.", "Mix the remaining 1/2 cup flour and brown sugar, cut in the 1/4 cup butter until crumbly, and scatter over the apples.", "Fold the overhanging crust up over the edge and crimp.", "Bake 20 minutes, then lower the heat to 375°F and bake about 35 minutes more, until the topping is golden and the filling bubbles.", "Cool at least 2 hours before slicing so the filling sets."], "title": "Jim's Apple Pie", "added": "2026-10-01", "whyItWorks": ["Tossing the apples in flour before baking thickens the juices as they cook, so the filling sets instead of running.", "Starting hot at 425°F sets the crust fast, then dropping to 375°F finishes the filling without burning the crumb topping.", "Cooling a full two hours is not optional: the filling needs that time to set, or the first slice falls apart."]}, {"attribution": "Joe Karle", "category": "Mains", "cookTime": "25 minutes", "description": "Crispy cutlets, bright marinara, and a blanket of melted mozzarella. Joe's weeknight show-off. This entry shows the format each family recipe will follow.", "example": true, "id": "example-joes-chicken-parmesan", "ingredients": ["4 chicken cutlets, pounded even", "Salt and black pepper", "1/2 cup flour", "2 eggs, beaten", "1 1/2 cups Italian breadcrumbs", "1/2 cup olive oil, for frying", "2 cups marinara sauce", "8 oz fresh mozzarella, sliced", "1/4 cup grated Parmesan", "Fresh basil, for serving"], "photo": "images/placeholder.svg", "prepTime": "20 minutes", "servings": "4", "sourceNote": "Example entry transcribed from a handwritten recipe card, October 2026. Wording preserved as written.", "steps": ["Heat the oven to 450°F.", "Season the cutlets with salt and pepper, then dredge in flour, dip in egg, and coat with breadcrumbs.", "Heat the olive oil in a large oven-safe skillet over medium-high heat.", "Fry the cutlets about 3 minutes per side, until deep golden. Work in batches if needed.", "Spoon marinara over each cutlet, top with mozzarella and Parmesan.", "Transfer the skillet to the oven and bake 8 to 10 minutes, until the cheese melts and browns in spots.", "Rest 5 minutes, scatter with basil, and serve."], "title": "Joe's Chicken Parmesan", "added": "2026-10-01", "whyItWorks": ["Pounding the cutlets even means they cook through at the same rate, no dry edges with raw centers.", "Frying first builds the crisp crust, and the oven finish is only long enough to melt the cheese, so the coating never goes soggy.", "Resting five minutes before serving lets the juices settle back in instead of running out on the cut."]}, {"attribution": "Tante Irma", "category": "Desserts", "description": "The German plum cake Tante Irma was known for. In loving memory, October 2026.", "example": true, "id": "example-tante-irmas-pflaumenkuchen", "ingredients": ["Tante Irma's recipe card is on its way. Her full ingredient list will be transcribed here when it arrives."], "photo": "images/dishes/tante-irmas-pflaumenkuchen.jpg", "sourceNote": "In loving memory of Tante Irma, who passed on October 1, 2026. Her recipe card will be transcribed here when it arrives.", "steps": ["The steps from her handwritten card will be added here when it arrives."], "title": "Tante Irma's Pflaumenkuchen", "added": "2026-10-01"}]}
+{
+ "updated": "2026-10-06",
+ "recipes": [
+  {
+   "attribution": "Tante Irma",
+   "category": "Desserts",
+   "description": "The German plum cake Tante Irma was known for. In loving memory, October 2026.",
+   "example": true,
+   "id": "example-tante-irmas-pflaumenkuchen",
+   "ingredients": [
+    "Tante Irma's recipe card is on its way. Her full ingredient list will be transcribed here when it arrives."
+   ],
+   "photo": "images/dishes/tante-irmas-pflaumenkuchen.jpg",
+   "sourceNote": "In loving memory of Tante Irma, who passed on October 1, 2026. Her recipe card will be transcribed here when it arrives.",
+   "steps": [
+    "The steps from her handwritten card will be added here when it arrives."
+   ],
+   "title": "Tante Irma's Pflaumenkuchen",
+   "added": "2026-10-01"
+  },
+  {
+   "id": "jean-bakers-apple-cake",
+   "title": "Jean Baker's Apple Cake",
+   "attribution": "Jean Baker",
+   "category": "Desserts",
+   "description": "Jean Baker's apple cake, mixed by hand and baked in a 9x13 pan, then sprinkled with powdered sugar once cold. Keeps well.",
+   "prepTime": "",
+   "cookTime": "40-45 minutes",
+   "servings": "",
+   "photo": "images/placeholder.svg",
+   "ingredients": [
+    "4 cups diced peeled apples",
+    "1 cup sugar",
+    "1/2 cup oil",
+    "1 cup chopped nuts",
+    "2 teaspoons vanilla",
+    "2 eggs",
+    "2 cups flour",
+    "2 teaspoons baking soda",
+    "2 teaspoons cinnamon",
+    "1 teaspoon salt",
+    "Powdered sugar, for sprinkling"
+   ],
+   "steps": [
+    "Beat together the sugar, oil, vanilla, and eggs. Mix by hand.",
+    "Mix the flour, soda, cinnamon, and salt, and add to the wet mixture.",
+    "Stir in the diced apples and chopped nuts.",
+    "Bake at 350° for 40-45 minutes in a greased 9x13 pan.",
+    "Sprinkle with powdered sugar when cold. Keeps well."
+   ],
+   "handwritingNotes": [],
+   "example": false,
+   "added": "2026-10-06",
+   "source": "card",
+   "sourceNote": "Transcribed from a handwritten recipe card, October 2026. Wording preserved as written."
+  },
+  {
+   "id": "jean-bakers-lemon-cake",
+   "title": "Jean Baker's Lemon Cake",
+   "attribution": "Jean Baker",
+   "category": "Desserts",
+   "description": "A lemon bundt cake with a lemon glaze that drizzles down the sides.",
+   "prepTime": "",
+   "cookTime": "40-45 minutes",
+   "servings": "",
+   "photo": "images/placeholder.svg",
+   "ingredients": [
+    "1 lemon cake mix",
+    "1 box instant lemon pudding",
+    "4 eggs, room temperature",
+    "1 cup water",
+    "1/3 cup oil",
+    "Lemon zest",
+    "Powdered sugar",
+    "1/2 lemon juice"
+   ],
+   "steps": [
+    "Mix the cake mix, pudding, eggs, water, and oil at medium speed for 2 minutes.",
+    "Pour into a bundt pan.",
+    "Bake 40-45 minutes.",
+    "Mix the lemon juice, powdered sugar, and lemon zest until medium consistency, not too thick. Put on top of the cake so it drizzles down the sides."
+   ],
+   "handwritingNotes": [
+    {
+     "note": "The card reads 'lemon jc 1/2' with no unit; transcribed as written.",
+     "ref": "Lemon juice amount"
+    },
+    {
+     "note": "The card gives no oven temperature for the cake.",
+     "ref": "Baking temperature"
+    },
+    {
+     "note": "The card reads 'From: Mother'.",
+     "ref": "Attribution"
+    }
+   ],
+   "example": false,
+   "added": "2026-10-06",
+   "source": "card",
+   "sourceNote": "Transcribed from a handwritten recipe card, October 2026. Wording preserved as written."
+  },
+  {
+   "id": "buttered-bread-crumbs",
+   "title": "Buttered Bread Crumbs",
+   "attribution": "Molly Karle",
+   "category": "Basics",
+   "description": "Buttery crumbs for topping casseroles, like Amy's macaroni and cheese.",
+   "prepTime": "",
+   "cookTime": "",
+   "servings": "",
+   "photo": "images/placeholder.svg",
+   "ingredients": [
+    "2 cups bread crumbs",
+    "1/2 stick butter (4 tablespoons), melted"
+   ],
+   "steps": [
+    "Blend the bread crumbs and melted butter with your fingers."
+   ],
+   "handwritingNotes": [
+    {
+     "note": "Card unsigned; uploaded by Molly Karle.",
+     "ref": "Attribution"
+    }
+   ],
+   "example": false,
+   "added": "2026-10-06",
+   "source": "card",
+   "sourceNote": "Transcribed from a handwritten recipe card, October 2026. Wording preserved as written."
+  },
+  {
+   "id": "apricot-biscotti",
+   "title": "Apricot Biscotti",
+   "attribution": "Molly Karle",
+   "category": "Desserts",
+   "description": "Twice-baked biscotti with dried apricots, light raisins, lemon peel, and almond extract.",
+   "prepTime": "",
+   "cookTime": "15-20 minutes, then 10 minutes more",
+   "servings": "About 90",
+   "photo": "images/placeholder.svg",
+   "ingredients": [
+    "1/3 cup butter or margarine",
+    "2/3 cup sugar",
+    "2 teaspoons baking powder",
+    "2 eggs",
+    "1 teaspoon finely shredded lemon peel",
+    "1/4 teaspoon almond extract",
+    "2 cups all-purpose flour",
+    "3/4 cup snipped dried apricots",
+    "3/4 cup light raisins",
+    "1 beaten egg yolk",
+    "1 tablespoon milk"
+   ],
+   "steps": [
+    "Beat the butter in a mixing bowl with a mixer on medium to high for 30 seconds.",
+    "Add the sugar and baking powder; beat till combined.",
+    "Beat in the eggs, lemon peel, and almond extract till combined.",
+    "Beat in as much flour as possible, then stir in any remaining flour and the fruit.",
+    "Divide the dough into thirds. Shape each portion into a 12-inch roll; place 3 inches apart on a slightly greased cookie sheet.",
+    "Flatten slightly to 1 1/2-inch width. Combine the egg yolk and milk; brush on the rolls.",
+    "Bake at 375° for 15-20 minutes or till lightly browned. Cool on the cookie sheet for 1 hour.",
+    "Transfer to a cutting board. Cut each loaf crosswise into 3/8-inch thick slices.",
+    "Lay the slices on a cookie sheet; bake at 325° for 5 minutes. Turn the slices over; bake about 5 minutes more or until dry and crisp.",
+    "Remove and cool on a wire rack. Makes about 90."
+   ],
+   "handwritingNotes": [
+    {
+     "note": "Card unsigned; uploaded by Molly Karle.",
+     "ref": "Attribution"
+    }
+   ],
+   "example": false,
+   "added": "2026-10-06",
+   "source": "card",
+   "sourceNote": "Transcribed from a handwritten recipe card, October 2026. Wording preserved as written."
+  },
+  {
+   "id": "amy-karles-macaroni-cheese",
+   "title": "Amy Karle's Macaroni & Cheese",
+   "attribution": "Amy Karle",
+   "category": "Mains",
+   "description": "A blender-smooth extra-sharp cheddar sauce layered with elbow pasta and buttered bread crumbs. Card dated January 1, 1993.",
+   "prepTime": "",
+   "cookTime": "45 minutes",
+   "servings": "",
+   "photo": "images/placeholder.svg",
+   "ingredients": [
+    "3 cups milk",
+    "10 oz extra sharp cheddar cheese",
+    "1 lb elbow pasta, cooked",
+    "4 tablespoons butter (approx 1/3 cup)",
+    "1/3 cup flour",
+    "1/2 teaspoon ground black pepper",
+    "Buttered bread crumbs, for topping"
+   ],
+   "steps": [
+    "Blend all ingredients except the pasta in a blender.",
+    "Pour the mixture into a double boiler. Stir constantly until the cheese is melted and the mixture is smooth and thickened.",
+    "Cover and continue cooking on low 10-12 minutes, stirring every 4 minutes.",
+    "Layer the pasta, cheese sauce, and buttered bread crumbs in a casserole pan.",
+    "Bake at 325° for 45 minutes, covered with foil except for the last 5 minutes.",
+    "Options: add ham or sausage, or thin-sliced tomato."
+   ],
+   "handwritingNotes": [
+    {
+     "note": "Card dated January 1, 1993.",
+     "ref": "Date"
+    }
+   ],
+   "example": false,
+   "added": "2026-10-06",
+   "source": "card",
+   "sourceNote": "Transcribed from a handwritten recipe card, October 2026. Wording preserved as written."
+  },
+  {
+   "id": "amy-karles-chocolate-pudding",
+   "title": "Amy Karle's Chocolate Pudding",
+   "attribution": "Amy Karle",
+   "category": "Desserts",
+   "description": "Stovetop chocolate pudding with unsweetened chocolate, finished with vanilla.",
+   "prepTime": "",
+   "cookTime": "10 minutes",
+   "servings": "",
+   "photo": "images/placeholder.svg",
+   "ingredients": [
+    "1/3 cup flour",
+    "1/2 cup sugar",
+    "3 cups milk",
+    "3 squares unsweetened chocolate (3 oz)",
+    "Dash of salt",
+    "1 teaspoon vanilla"
+   ],
+   "steps": [
+    "Heat the flour, sugar, milk, and chocolate in a double boiler until thick and the chocolate is melted.",
+    "Cover and continue cooking for 10 minutes, stirring occasionally.",
+    "Add a dash of salt and 1 teaspoon vanilla.",
+    "Cover the pudding with wax paper."
+   ],
+   "handwritingNotes": [],
+   "example": false,
+   "added": "2026-10-06",
+   "source": "card",
+   "sourceNote": "Transcribed from a handwritten recipe card, October 2026. Wording preserved as written."
+  }
+ ]
+}
