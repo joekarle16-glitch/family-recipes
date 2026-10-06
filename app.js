@@ -151,6 +151,10 @@ function photoFor(recipe) {
   return recipe.photo || "images/placeholder.svg";
 }
 
+function isPlaceholderPhoto(recipe) {
+  return photoFor(recipe) === "images/placeholder.svg";
+}
+
 function exampleBadge(recipe) {
   return recipe.example
     ? '<span class="example-ribbon">Example entry</span>'
@@ -620,12 +624,9 @@ function renderDetail(recipes, root, comments) {
 
   root.innerHTML =
     exampleBanner +
-    `<div class="recipe-sticky" id="recipe-sticky"><span class="rs-title">${esc(
+    `<div class="recipe-sticky" id="recipe-sticky"><div class="recipe-sticky-inner"><span class="rs-title">${esc(
       recipe.title
-    )}</span><span class="rs-links"><a href="#recipe-body">Ingredients</a><a href="#steps-anchor">Steps</a><button type="button" class="cookmode-btn rs-cook" aria-pressed="false">Start cook mode</button></span></div>` +
-    `<div class="cookbar"><span class="cb-title">${esc(
-      recipe.title
-    )}</span><button type="button" class="btn cookmode-btn" aria-pressed="false">Start cook mode</button></div>` +
+    )}</span><span class="rs-links"><a href="#recipe-body">Ingredients</a><a href="#steps-anchor">Steps</a><button type="button" class="cookmode-btn rs-cook" aria-pressed="false">Start cook mode</button></span></div></div>` +
     crumbs +
     `<div class="recipe-head">` +
     (recipe.category
@@ -637,14 +638,18 @@ function renderDetail(recipes, root, comments) {
       ? `<p class="desc lede">${esc(recipe.description)}</p>`
       : "") +
     whyBox +
-    `<p class="action-links"><button type="button" class="linklike" id="listen-btn" aria-pressed="false">Listen to this recipe</button><button type="button" class="linklike" id="share-btn">Share</button><button type="button" class="linklike" id="suggest-fix-btn">Suggest a correction</button><a href="#recipe-body">Jump to recipe</a></p>` +
+    `<p class="action-links"><button type="button" class="linklike" id="listen-btn" aria-pressed="false">Listen to this recipe</button><button type="button" class="linklike" id="share-btn">Share</button><button type="button" class="linklike" id="suggest-fix-btn">Suggest a correction</button><button type="button" class="linklike cookmode-btn" aria-pressed="false">Cook mode</button><a href="#recipe-body">Jump to recipe</a></p>` +
     `</div>` +
-    `<img class="recipe-photo" src="${esc(photoFor(recipe))}" alt="${esc(recipe.title)}">` +
-    `<div class="meta-row">` +
-    (recipe.servings ? `<div><span>Servings</span><strong>${esc(recipe.servings)}</strong></div>` : "") +
-    (recipe.prepTime ? `<div><span>Prep</span><strong>${esc(recipe.prepTime)}</strong></div>` : "") +
-    (recipe.cookTime ? `<div><span>Cook</span><strong>${esc(recipe.cookTime)}</strong></div>` : "") +
-    `</div>` +
+    (isPlaceholderPhoto(recipe)
+      ? `<p class="photo-soon">Photo coming soon. If you have a picture of the finished dish, share it and it could lead this page.</p>`
+      : `<img class="recipe-photo" src="${esc(photoFor(recipe))}" alt="${esc(recipe.title)}">`) +
+    (recipe.servings || recipe.prepTime || recipe.cookTime
+      ? `<div class="meta-row">` +
+        (recipe.servings ? `<div><span>Servings</span><strong>${esc(recipe.servings)}</strong></div>` : "") +
+        (recipe.prepTime ? `<div><span>Prep</span><strong>${esc(recipe.prepTime)}</strong></div>` : "") +
+        (recipe.cookTime ? `<div><span>Cook</span><strong>${esc(recipe.cookTime)}</strong></div>` : "") +
+        `</div>`
+      : "") +
     (notes ? `<div class="note-box"><h3>A note on the original card</h3>${notes}</div>` : "") +
     `<div class="two-col" id="recipe-body">` +
     `<div><h2>Ingredients</h2><p class="cook-hint">Tap an ingredient to check it off as you go.</p><ul class="ingredients">${(recipe.ingredients || [])
@@ -682,12 +687,13 @@ function renderDetail(recipes, root, comments) {
   updateProgress();
 
   const photo = root.querySelector(".recipe-photo");
-  photo.addEventListener("error", () => {
-    if (!photo.dataset.fallback) {
-      photo.dataset.fallback = "1";
-      photo.src = "images/placeholder.svg";
-    }
-  });
+  if (photo)
+    photo.addEventListener("error", () => {
+      if (!photo.dataset.fallback) {
+        photo.dataset.fallback = "1";
+        photo.src = "images/placeholder.svg";
+      }
+    });
 
   wireReadAloud(recipe);
 
@@ -704,6 +710,21 @@ function renderDetail(recipes, root, comments) {
         !e.isIntersecting && e.boundingClientRect.top < 0
       );
     }).observe(head);
+  }
+
+  // Keep the sticky recipe bar tucked below the sticky site header instead
+  // of overlapping it. Measured live so it survives font loads and resizes.
+  const siteHeader = document.querySelector(".site-header");
+  if (sticky && siteHeader) {
+    const placeSticky = () => {
+      sticky.style.top = siteHeader.offsetHeight + "px";
+    };
+    placeSticky();
+    if ("ResizeObserver" in window) {
+      new ResizeObserver(placeSticky).observe(siteHeader);
+    } else {
+      window.addEventListener("resize", placeSticky);
+    }
   }
 
   wireImageFallback(root);

@@ -603,9 +603,11 @@ a { color: var(--pine); }
 }
 
 .meta-row {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
-  gap: 1rem;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1rem 2.2rem;
+  width: fit-content;
+  max-width: 100%;
   margin-bottom: 2.2rem;
   padding: 1.15rem 1.4rem;
   background: var(--card);
@@ -732,9 +734,22 @@ ol.steps li::before {
   font-size: 0.9rem;
   font-style: italic;
   font-family: var(--serif);
-  padding: 1.6rem 0 3.5rem;
+  padding: 1.4rem 0 1.2rem;
   border-top: 1px solid var(--line);
   margin-top: 1.5rem;
+}
+
+.photo-soon {
+  border: 1px dashed var(--line);
+  border-radius: var(--radius);
+  background: var(--card);
+  color: var(--muted);
+  font-family: var(--serif);
+  font-style: italic;
+  text-align: center;
+  padding: 1.1rem 1.4rem;
+  margin: 0 0 1.6rem;
+  max-width: 46rem;
 }
 
 /* ---------- About page ---------- */
@@ -767,6 +782,8 @@ ol.steps li::before {
   padding-left: 1.1rem;
   margin: 1.4rem 0 2rem;
 }
+
+.about .cta-row { justify-content: flex-start; }
 
 /* ---------- Family gallery ---------- */
 
@@ -807,7 +824,6 @@ ol.steps li::before {
 /* ---------- Read aloud ---------- */
 
 #listen-btn {
-  border: 1px solid var(--brass);
   cursor: pointer;
   font-family: var(--sans);
   font-size: 0.92rem;
@@ -1076,23 +1092,34 @@ ol.steps li.done .step-text {
 /* ---------- Premium UX round: sticky header, cook mode, save, skeletons ---------- */
 
 .recipe-sticky {
-  position: sticky;
+  position: fixed;
   top: 0;
+  left: 0;
+  right: 0;
   z-index: 40;
+  visibility: hidden;
+  transform: translateY(-130%);
+  transition: transform 0.25s ease, visibility 0s linear 0.25s;
+  background: rgba(18, 42, 30, 0.96);
+  color: var(--cream);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.recipe-sticky.visible {
+  visibility: visible;
+  transform: none;
+  transition: transform 0.25s ease;
+}
+
+.recipe-sticky-inner {
+  max-width: 1040px;
+  margin: 0 auto;
+  padding: 0.65rem 1.1rem;
   display: flex;
   align-items: center;
   justify-content: space-between;
   gap: 1rem;
-  background: rgba(18, 42, 30, 0.96);
-  color: var(--cream);
-  padding: 0.65rem 1.1rem;
-  border-radius: 0 0 12px 12px;
-  transform: translateY(-130%);
-  transition: transform 0.25s ease;
-  margin: 0 -1px;
 }
-
-.recipe-sticky.visible { transform: none; }
 
 .rs-title {
   font-family: var(--serif);
@@ -1434,7 +1461,6 @@ ul.ingredients li.ing-group span {
 .surprise-row { text-align: center; margin: 0 0 1.6rem; }
 
 /* Sticky cook bar (mobile, recipe pages) */
-.cookbar { display: none; }
 
 /* Footer sitemap */
 .foot-grid {
@@ -1482,8 +1508,6 @@ ul.ingredients li.ing-group span {
   .site-header nav { display: none; }
 
   body { padding-bottom: 78px; }
-  body.recipe-page { padding-bottom: 0; }
-  body.recipe-page .tabbar { display: none; }
 
   .tabbar {
     display: flex;
@@ -1518,37 +1542,6 @@ ul.ingredients li.ing-group span {
 
   body.recipe-page .recipe-sticky { display: none; }
 
-  body.recipe-page .cookbar {
-    display: flex;
-    position: fixed;
-    bottom: 0;
-    left: 0;
-    right: 0;
-    z-index: 50;
-    align-items: center;
-    justify-content: space-between;
-    gap: 0.8rem;
-    background: rgba(18, 42, 30, 0.97);
-    border-top: 1px solid rgba(255, 255, 255, 0.14);
-    padding: 0.55rem 1rem calc(0.55rem + env(safe-area-inset-bottom));
-  }
-
-  .cb-title {
-    font-family: var(--serif);
-    color: var(--cream);
-    font-size: 0.95rem;
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
-  }
-
-  .cookbar .btn {
-    flex-shrink: 0;
-    padding: 0.6rem 1.15rem;
-    font-size: 0.85rem;
-    min-height: 44px;
-  }
-
   .coll-grid { grid-template-columns: 1fr; gap: 0.8rem; }
   .coll-icon { width: 52px; height: 52px; }
   .coll-icon svg { width: 27px; height: 27px; }
@@ -1563,7 +1556,7 @@ ul.ingredients li.ing-group span {
 }
 
 @media print {
-  .tabbar, .cookbar, .crumbs, .action-links, .contribute-band, .collections { display: none !important; }
+  .tabbar, .crumbs, .action-links, .contribute-band, .collections, .recipe-sticky { display: none !important; }
 }
 
 /* Sticky-bar cook button */
@@ -1591,8 +1584,13 @@ ul.ingredients li.ing-group span {
 .rs-cook[aria-pressed="true"] { background: var(--pine); color: #fff; }
 
 /* Family stories (per-recipe comments) */
-.stories { margin: 3rem 0 1rem; }
-.stories h2 { margin-bottom: 0.25rem; }
+.stories { margin: 2.2rem 0 1rem; max-width: 46rem; }
+.stories h2 {
+  font-family: var(--serif);
+  font-weight: 500;
+  font-size: 1.6rem;
+  margin: 0 0 0.25rem;
+}
 .stories-sub { color: var(--muted, #5c6b5e); margin: 0 0 1.25rem; }
 .story-list { display: grid; gap: 1rem; margin-bottom: 1.5rem; }
 .story {
