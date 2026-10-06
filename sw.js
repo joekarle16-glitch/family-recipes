@@ -1,4 +1,8 @@
-const CACHE = "karle-kitchen-v1";
+/* Bump VERSION on every release alongside the ?v= asset params in the HTML.
+   The versioned cache name purges stale entries; the query string stays part
+   of the cache key so ?v= bumps actually fetch fresh files. */
+const VERSION = "v16";
+const CACHE = "karle-kitchen-" + VERSION;
 const CORE = [
   "/",
   "/index.html",
@@ -57,10 +61,11 @@ self.addEventListener("fetch", (event) => {
     return;
   }
 
-  // Static assets: cache first (ignore cache-busting query strings).
+  // Static assets: cache first, keyed by full URL (query string included,
+  // so ?v= cache-busters fetch fresh files on each release).
   event.respondWith(
     caches
-      .match(event.request, { ignoreSearch: true })
+      .match(event.request)
       .then(
         (hit) =>
           hit ||
