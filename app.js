@@ -2,6 +2,7 @@ document.addEventListener("DOMContentLoaded", init);
 
 async function init() {
   const recipes = await loadRecipes();
+  const comments = await loadComments();
   initStats(recipes);
   if (document.getElementById("grid")) {
     initGrid(recipes);
@@ -14,7 +15,7 @@ async function init() {
   }
   const detail = document.getElementById("recipe-detail");
   if (detail) {
-    renderDetail(recipes, detail);
+    renderDetail(recipes, detail, comments);
   }
   const gallery = document.getElementById("family-gallery");
   if (gallery) {
@@ -117,6 +118,17 @@ async function loadRecipes() {
     return Array.isArray(data.recipes) ? data.recipes : [];
   } catch (err) {
     return [];
+  }
+}
+
+async function loadComments() {
+  try {
+    const res = await fetch("comments.json", { cache: "no-store" });
+    if (!res.ok) return {};
+    const data = await res.json();
+    return data && typeof data.comments === "object" ? data.comments : {};
+  } catch (err) {
+    return {};
   }
 }
 
@@ -561,7 +573,8 @@ function setCookMode(on) {
   }
 }
 
-function renderDetail(recipes, root) {
+function renderDetail(recipes, root, comments) {
+  comments = comments || {};
   const params = new URLSearchParams(window.location.search);
   const id = params.get("id");
   const recipe = recipes.find((r) => r.id === id);
@@ -643,6 +656,7 @@ function renderDetail(recipes, root) {
     `</div>` +
     (cookNotes ? `<div class="note-box cook-notes"><h3>Good to know</h3><ul>${cookNotes}</ul></div>` : "") +
     (recipe.sourceNote ? `<p class="source-note">${esc(recipe.sourceNote)}</p>` : "") +
+    storiesHtml(recipe, comments) +
     relatedHtml(recipes, recipe);
 
   injectRecipeSchema(recipe);
@@ -719,6 +733,65 @@ function wireCorrectionButton(recipe, rerender) {
   btn.addEventListener("click", function () {
     renderEditMode(recipe, rerender);
   });
+}
+
+var COMMENT_FORM_URL =
+  "https://docs.google.com/forms/d/e/1FAIpQLSfHwtM6ilL7ISOpyfsdI3CCepj9sA_dxlqLg41A2z3L_xX2tQ/viewform";
+var COMMENT_ENTRIES = {
+  recipe: "entry.378372371",
+  name: "entry.1308919211",
+  story: "entry.1379000142",
+};
+
+function commentFormUrl(recipe) {
+  return (
+    COMMENT_FORM_URL +
+    "?usp=pp_url&" +
+    COMMENT_ENTRIES.recipe +
+    "=" +
+    encodeURIComponent(recipe.title || "")
+  );
+}
+
+function storyDate(dateStr) {
+  if (!dateStr) return "";
+  var parts = String(dateStr).split("-");
+  if (parts.length < 2) return esc(dateStr);
+  var months = ["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"];
+  var m = months[parseInt(parts[1], 10) - 1] || "";
+  return m + " " + parts[0];
+}
+
+function storiesHtml(recipe, comments) {
+  var list = (comments && comments[recipe.id]) || [];
+  var items = list
+    .map(function (c) {
+      return (
+        '<article class="story"><p class="story-text">' +
+        esc(c.text || "") +
+        "</p>" +
+        '<p class="story-by">&mdash; ' +
+        esc(c.name || "Family") +
+        (c.date ? ' <span class="story-date">&middot; ' + storyDate(c.date) + "</span>" : "") +
+        "</p></article>"
+      );
+    })
+    .join("");
+  if (!items) {
+    items =
+      '<p class="stories-empty">No stories yet. If this dish means something to you, be the first to share it.</p>';
+  }
+  return (
+    '<section class="stories" id="stories"><h2>Family stories</h2>' +
+    '<p class="stories-sub">Memories, stories, and advice from the family about this dish.</p>' +
+    '<div class="story-list">' +
+    items +
+    "</div>" +
+    '<p><a class="btn" href="' +
+    commentFormUrl(recipe) +
+    '" target="_blank" rel="noopener">Share your story</a></p>' +
+    '<p class="stories-note">Stories appear here after the morning check.</p></section>'
+  );
 }
 
 function editField(label, id, value, opts) {

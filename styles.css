@@ -1589,3 +1589,20 @@ ul.ingredients li.ing-group span {
 }
 
 .rs-cook[aria-pressed="true"] { background: var(--pine); color: #fff; }
+
+/* Family stories (per-recipe comments) */
+.stories { margin: 3rem 0 1rem; }
+.stories h2 { margin-bottom: 0.25rem; }
+.stories-sub { color: var(--muted, #5c6b5e); margin: 0 0 1.25rem; }
+.story-list { display: grid; gap: 1rem; margin-bottom: 1.5rem; }
+.story {
+  background: #fffdf8;
+  border: 1px solid #e8ddc4;
+  border-radius: 12px;
+  padding: 1.1rem 1.25rem;
+}
+.story-text { margin: 0 0 0.6rem; line-height: 1.6; }
+.story-by { margin: 0; font-weight: 600; color: var(--pine, #122a1e); }
+.story-date { font-weight: 400; color: var(--muted, #5c6b5e); }
+.stories-empty { color: var(--muted, #5c6b5e); font-style: italic; }
+.stories-note { font-size: 0.85rem; color: var(--muted, #5c6b5e); margin-top: 0.75rem; }
