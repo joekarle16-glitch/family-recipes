@@ -347,7 +347,7 @@ a { color: var(--pine); }
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(272px, 1fr));
   gap: 1.7rem;
-  padding-bottom: 4rem;
+  padding-bottom: 2.2rem;
 }
 
 .card {
@@ -1343,7 +1343,7 @@ ul.ingredients li.ing-group span {
   color: var(--cream);
   text-align: center;
   padding: 3.2rem 1.4rem;
-  margin: 1rem 0 0;
+  margin: 0;
 }
 
 .contribute-ornament {
